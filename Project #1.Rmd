@@ -1,0 +1,46 @@
+---
+title: 'Project #1'
+author: "Kenneth Andrysiak, Joel Revo, Alec Palo, Jacob Cohen, Michael McLaughlan"
+date: "2/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Data Import and Basic Sturcture Visualization
+
+```{r}
+hotelbookings<-read.csv("hotel_bookings.csv")
+hotel<-hotelbookings
+```
+
+##Data Cleaning
+
+```{r}
+hotel$is_canceled<-as.factor(hotel$is_canceled)
+hotel$arrival_date_year<-as.factor(hotel$arrival_date_year)
+hotel$arrival_date_month<-as.factor(hotel$arrival_date_month)
+hotel$arrival_date_day_of_month<-as.factor(hotel$arrival_date_day_of_month)
+hotel$arrival_date_week_number<-as.factor(hotel$arrival_date_week_number)
+hotel$is_repeated_guest<-as.factor(hotel$is_repeated_guest)
+hotel$is_canceled<-as.factor(hotel$is_canceled)
+hotel$meal<-as.factor(hotel$meal)
+hotel$country<-as.factor(hotel$meal)
+hotel$market_segment<-as.factor(hotel$market_segment)
+hotel$distribution_channel<-as.factor(hotel$distribution_channel)
+hotel$reserved_room_type<-as.factor(hotel$reserved_room_type)
+hotel$assigned_room_type<-as.factor(hotel$assigned_room_type)
+hotel$deposit_type<-as.factor(hotel$deposit_type)
+hotel$agent<-as.factor(hotel$agent)
+hotel$company<-as.factor(hotel$company)
+hotel$customer_type<-as.factor(hotel$customer_type)
+hotel$reservation_status<-as.factor(hotel$reservation_status)
+hotel$reservation_status_date<-as.factor(hotel$reservation_status_date)
+View(hotel)
+summary(hotel)
+str(hotel)
+```
+
+Here, we cleaned the data to turn a number of different variables in the data set into factors to make the data easier to work with.

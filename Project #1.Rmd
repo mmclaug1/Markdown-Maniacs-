@@ -43,4 +43,4 @@ summary(hotel)
 str(hotel)
 ```
 
-Here, we cleaned the data to turn a number of different variables in the data set into factors to make the data easier to work with.
+Here, we cleaned the data to turn a number of different variables in the data set into factors to make the data easier to work with. This is a test, hello world. 

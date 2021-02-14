@@ -1,0 +1,84 @@
+---
+title: "Group_Project"
+author: "Alec Palo"
+date: "2/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data Setup
+
+```{r}
+hotels <- read.csv("hotel_bookings.csv")
+str(hotels)
+library("ggplot2")
+```
+
+## Data Cleaning
+
+```{r}
+
+hotels$reservation_status <- as.factor(hotels$reservation_status)
+hotels$reservation_status_date <- as.factor(hotels$reservation_status_date)
+hotels$hotel <- as.factor(hotels$hotel)
+hotels$arrival_date_month <- as.factor(hotels$arrival_date_month)
+hotels$meal <- as.factor(hotels$meal)
+hotels$country <- as.factor(hotels$country)
+hotels$market_segment <- as.factor(hotels$market_segment)
+hotels$distribution_channel <- as.factor(hotels$distribution_channel)
+hotels$reserved_room_type <- as.factor(hotels$reserved_room_type)
+hotels$assigned_room_type <- as.factor(hotels$assigned_room_type)
+hotels$deposit_type <- as.factor(hotels$deposit_type)
+hotels$agent <- as.factor(hotels$agent)
+hotels$company <- as.factor(hotels$company)
+hotels$deposit_type <- as.factor(hotels$deposit_type)
+
+```
+
+What is the cancelation rate
+
+```{r}
+cancelration_rate <- (sum(hotels$is_canceled))/nrow(hotels)
+round(cancelration_rate, 3)
+```
+
+```{r}
+table(hotels$arrival_date_month)
+```
+
+
+What is the most popular month
+
+```{r}
+month_arrivals <- sort(table(hotels$arrival_date_month))
+barplot(month_arrivals, main = "# of arrivals by month", xlab = "month", ylab = "# of arrivals", cex.names = 0.4, col = "purple")
+month_arrivals <- data.frame(month_arrivals)
+month_arrivals
+#month_arrivals <- as.factor(month_arrivals, levels = )
+ggplot(data = month_arrivals, aes(x = Var1, y = Freq)) + geom_bar(stat = "identity")
+```
+
+How many companies book hotels
+
+```{r}
+nlevels(hotels$company)
+```
+
+How many total bookings were from agencies
+
+```{r}
+nrow(hotels) - summary(hotels$agent)[2]
+```
+
+How many bookings by country
+
+```{r}
+country_arrivals <- sort(table(hotels$country), decreasing = TRUE)
+country_arrivals <- data.frame(country_arrivals)[1:10,]
+ggplot(data = country_arrivals, aes(x = Var1, y = Freq)) + geom_bar(stat = "identity")
+```
+
+

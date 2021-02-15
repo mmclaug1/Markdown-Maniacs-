@@ -45,6 +45,15 @@ str(hotel)
 
 Here, we cleaned the data to turn a number of different variables in the data set into factors to make the data easier to work with. 
 
-##Analysis and Plotting of Data for VAriables 1 Through 6 in the Hotel Data Set
+##Possible Relationships in the Data
 
-Here, we will analyze and visualize the data of the first 6 variables listed in the data set provided. We will do both basic and complicated analysis that will lead to the visualization of the data in a number of different plots
+A number of different variables in the data seem to have relevant business takeaways. In this section, we will analyze these relationships and provide visualizations of the relationships between the variables.
+
+```{r}
+
+```
+
+
+##Summary
+
+

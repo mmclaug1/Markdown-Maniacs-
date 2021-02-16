@@ -2,21 +2,27 @@
 title: 'Project #1'
 author: "Kenneth Andrysiak, Joel Revo, Alec Palo, Jacob Cohen, Michael McLaughlan"
 date: "2/10/2021"
-output: html_document
+output: 
+  html_document: 
+    code_folding: hide
+    number_sections: true 
+    toc: true
+    toc_float: 
+      collapsed: true  
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-##Data Import and Basic Sturcture Visualization
+#Data Import and Basic Sturcture Visualization
 
 ```{r}
 hotelbookings<-read.csv("hotel_bookings.csv")
 hotel<-hotelbookings
 ```
 
-##Data Cleaning
+#Data Cleaning
 
 ```{r}
 hotel$hotel<-as.factor(hotel$hotel)
@@ -27,6 +33,9 @@ hotel$arrival_date_day_of_month<-as.factor(hotel$arrival_date_day_of_month)
 hotel$arrival_date_week_number<-as.factor(hotel$arrival_date_week_number)
 hotel$is_repeated_guest<-as.factor(hotel$is_repeated_guest)
 hotel$is_canceled<-as.factor(hotel$is_canceled)
+```
+
+```{r}
 hotel$meal<-as.factor(hotel$meal)
 hotel$country<-as.factor(hotel$meal)
 hotel$market_segment<-as.factor(hotel$market_segment)
@@ -39,7 +48,10 @@ hotel$company<-as.factor(hotel$company)
 hotel$customer_type<-as.factor(hotel$customer_type)
 hotel$reservation_status<-as.factor(hotel$reservation_status)
 hotel$reservation_status_date<-as.factor(hotel$reservation_status_date)
-View(hotel)
+```
+
+## Basic Data Visualization
+```{r}
 summary(hotel)
 str(hotel)
 ```

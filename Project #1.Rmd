@@ -19,6 +19,7 @@ hotel<-hotelbookings
 ##Data Cleaning
 
 ```{r}
+hotel$hotel<-as.factor(hotel$hotel)
 hotel$is_canceled<-as.factor(hotel$is_canceled)
 hotel$arrival_date_year<-as.factor(hotel$arrival_date_year)
 hotel$arrival_date_month<-as.factor(hotel$arrival_date_month)
@@ -53,7 +54,8 @@ To begin, we will do some basic descriptive analytics on a number of different v
 
 
 ```{r}
-
+tableis_canceled<-table(hotel$is_canceled)
+round(prop.table(tableis_canceled),3)
 
 ```
 

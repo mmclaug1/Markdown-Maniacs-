@@ -58,7 +58,7 @@ str(hotel)
 
 Here, we cleaned the data to turn a number of different variables in the data set into factors to make the data easier to work with. 
 
-##Possible Relationships in the Data
+#Possible Relationships in the Data
 
 A number of different variables in the data seem to have relevant business takeaways. In this section, we will analyze these relationships and provide visualizations of the relationships between the variables.
 
@@ -71,7 +71,33 @@ round(prop.table(tableis_canceled),3)
 
 ```
 
+##How big are the groups that are staying, and how long are they staying?
+```{r}
 
-##Summary
+adults <-hotel$adults
+children <-hotel$children
+babies <- hotel$babies
+totalpeople <-adults+children+babies
+
+totalpeople <-as.factor(totalpeople)
+
+plot(totalpeople,ylab="Number of Reservations", xlab="People in Reservation")
+
+
+weekendnights <- hotel$stays_in_weekend_nights
+weekdaynights <- hotel$stays_in_week_nights
+totalnights <-weekendnights+weekdaynights
+
+totalnights <- as.factor(totalnights)
+
+plot(totalnights,ylab="Number of Reservations", xlab="Number of Nights Stayed")
+
+
+
+
+```
+
+
+#Summary
 
 

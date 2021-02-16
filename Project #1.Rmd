@@ -49,7 +49,11 @@ Here, we cleaned the data to turn a number of different variables in the data se
 
 A number of different variables in the data seem to have relevant business takeaways. In this section, we will analyze these relationships and provide visualizations of the relationships between the variables.
 
+To begin, we will do some basic descriptive analytics on a number of different variables that we think have some pretty significant business insights.
+
+
 ```{r}
+
 
 ```
 

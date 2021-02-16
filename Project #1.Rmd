@@ -20,6 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 hotelbookings<-read.csv("hotel_bookings.csv")
 hotel<-hotelbookings
+library(ggplot2)
 ```
 
 #Data Cleaning
@@ -70,29 +71,68 @@ tableis_canceled<-table(hotel$is_canceled)
 round(prop.table(tableis_canceled),3)
 
 ```
-
-##How big are the groups that are staying, and how long are they staying?
+#How Long are the Groups Staying?
 ```{r}
-
-adults <-hotel$adults
-children <-hotel$children
-babies <- hotel$babies
-totalpeople <-adults+children+babies
-
-totalpeople <-as.factor(totalpeople)
-
-plot(totalpeople,ylab="Number of Reservations", xlab="People in Reservation")
-
-
 weekendnights <- hotel$stays_in_weekend_nights
 weekdaynights <- hotel$stays_in_week_nights
 totalnights <-weekendnights+weekdaynights
 
 totalnights <- as.factor(totalnights)
 
-plot(totalnights,ylab="Number of Reservations", xlab="Number of Nights Stayed")
+plot(totalnights,ylab="Number of Reservations", xlab="Number of Nights Stayed", col="purple")
+
+```
+##How big are the groups that are staying?
+Here, we are looking to find data related to group size. Since the current data has people grouped into three different columns (adults, children and babies) we will first create a variable to look at the total number of people per group. From this, we will look to compare group size to other vairables. 
+```{r}
+
+adults <-hotel$adults
+children <-hotel$children
+babies <- hotel$babies
+groupsize <-adults+children+babies
+
+groupsize <- as.factor(groupsize)
+
+plot(groupsize, ylab="Number of Reservations", xlab="People in Reservation", col="purple")
 
 
+meanadrbygroup <- round(tapply(hotel$adr,groupsize, mean, na.rm=TRUE), 3)
+
+meanadrbygroup
+
+
+ggplot(hotel, aes(x=groupsize, y=adr))+ geom_bar(stat = "identity")
+ ##Not sure what graph to do here but theres something here
+
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(hotel, aes(x=groupsize, fill=market_segment)) + geom_bar(position = "stack")
+
+ggplot(hotel, aes(x=groupsize, fill=country)) + geom_bar(position = "stack")
+
+ggplot(hotel, aes(x=adr, fill=groupsize)) + geom_density(alpha=0.4) + labs(title="Lead Time by Group Size") # This is obviously a bad graph just trying some things out
+
+```
+## Do Kids cause more special requests?
+Here, we will look to see if number of children + babies is related to the number of special requests. 
+```{r}
+
+mean(hotel$total_of_special_requests, na.rm=TRUE)
+
+nonadults<-children+babies
+
+#Basically what im looking to do here is find out whether children and babies increase number of speical requests. Any ideas?
+
+
+```
+
+
+##Average Price Per Person 
+```{r}
+priceperperson<-hotel$adr*groupsize
 
 
 ```

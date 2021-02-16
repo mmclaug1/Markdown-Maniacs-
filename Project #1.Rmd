@@ -93,7 +93,7 @@ groupsize <-adults+children+babies
 
 groupsize <- as.factor(groupsize)
 
-plot(groupsize, ylab="Number of Reservations", xlab="People in Reservation", col="purple")
+plot(groupsize, xlim=c(1,6),ylab="Number of Reservations", xlab="People in Reservation", col="purple")
 
 
 meanadrbygroup <- round(tapply(hotel$adr,groupsize, mean, na.rm=TRUE), 3)

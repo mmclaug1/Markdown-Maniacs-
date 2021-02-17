@@ -26,8 +26,6 @@ library(ggplot2)
 #Data Cleaning
 
 ```{r}
-hotel$hotel<-as.factor(hotel$hotel)
-hotel$is_canceled<-as.factor(hotel$is_canceled)
 hotel$arrival_date_year<-as.factor(hotel$arrival_date_year)
 hotel$arrival_date_month<-as.factor(hotel$arrival_date_month)
 hotel$arrival_date_day_of_month<-as.factor(hotel$arrival_date_day_of_month)

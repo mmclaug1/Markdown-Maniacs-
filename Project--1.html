@@ -288,9 +288,7 @@ div.tocify {
 hotel&lt;-hotelbookings
 library(ggplot2)</code></pre>
 <p>#Data Cleaning</p>
-<pre class="r"><code>hotel$hotel&lt;-as.factor(hotel$hotel)
-hotel$is_canceled&lt;-as.factor(hotel$is_canceled)
-hotel$arrival_date_year&lt;-as.factor(hotel$arrival_date_year)
+<pre class="r"><code>hotel$arrival_date_year&lt;-as.factor(hotel$arrival_date_year)
 hotel$arrival_date_month&lt;-as.factor(hotel$arrival_date_month)
 hotel$arrival_date_day_of_month&lt;-as.factor(hotel$arrival_date_day_of_month)
 hotel$arrival_date_week_number&lt;-as.factor(hotel$arrival_date_week_number)
@@ -311,14 +309,14 @@ hotel$reservation_status_date&lt;-as.factor(hotel$reservation_status_date)</code
 <div id="basic-data-visualization" class="section level2" number="0.1">
 <h2 number="0.1"><span class="header-section-number">0.1</span> Basic Data Visualization</h2>
 <pre class="r"><code>summary(hotel)</code></pre>
-<pre><code>##           hotel       is_canceled   lead_time   arrival_date_year
-##  City Hotel  :79330   0:75166     Min.   :  0   2015:21996       
-##  Resort Hotel:40060   1:44224     1st Qu.: 18   2016:56707       
-##                                   Median : 69   2017:40687       
-##                                   Mean   :104                    
-##                                   3rd Qu.:160                    
-##                                   Max.   :737                    
-##                                                                  
+<pre><code>##     hotel           is_canceled   lead_time   arrival_date_year
+##  Length:119390      0:75166     Min.   :  0   2015:21996       
+##  Class :character   1:44224     1st Qu.: 18   2016:56707       
+##  Mode  :character               Median : 69   2017:40687       
+##                                 Mean   :104                    
+##                                 3rd Qu.:160                    
+##                                 Max.   :737                    
+##                                                                
 ##  arrival_date_month arrival_date_week_number arrival_date_day_of_month
 ##  August :13877      33     :  3580           17     : 4406            
 ##  July   :12661      30     :  3087           5      : 4317            
@@ -393,7 +391,7 @@ hotel$reservation_status_date&lt;-as.factor(hotel$reservation_status_date)</code
 ##                     (Other)   :114477</code></pre>
 <pre class="r"><code>str(hotel)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    119390 obs. of  32 variables:
-##  $ hotel                         : Factor w/ 2 levels &quot;City Hotel&quot;,&quot;Resort Hotel&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ hotel                         : chr  &quot;Resort Hotel&quot; &quot;Resort Hotel&quot; &quot;Resort Hotel&quot; &quot;Resort Hotel&quot; ...
 ##  $ is_canceled                   : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 2 2 ...
 ##  $ lead_time                     : int  342 737 7 13 14 14 0 9 85 75 ...
 ##  $ arrival_date_year             : Factor w/ 3 levels &quot;2015&quot;,&quot;2016&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...

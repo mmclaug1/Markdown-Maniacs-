@@ -15,9 +15,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Introduction 
-Here we will put in an introductory paragraph 
-
 #Data Import and Basic Sturcture Visualization
 
 ```{r}
@@ -64,12 +61,12 @@ A number of different variables in the data seem to have relevant business takea
 
 To begin, we will do some basic descriptive analytics on a number of different variables that we think have some pretty significant business insights.
 
-#Cancelation Rate 
+#How many of the reservations and what proportion of them are being canceled?
 ```{r}
 tableis_canceled<-table(hotel$is_canceled)
 round(prop.table(tableis_canceled),3)
 ```
-##How many of each hotel classification (Resort and City) is being canceled, and at what proportion?
+#How many of each hotel classification (Resort and City) is being canceled, and at what proportion?
 ```{r}
 resort<-hotel[hotel$hotel == "Resort Hotel",]
 city<-hotel[hotel$hotel == "City Hotel",]
@@ -81,47 +78,47 @@ nrow(resortcanceled)/nrow(resort)
 nrow(cityiscanceled)/nrow(city)
 
 ```
-##Which country of origin had the highest cancelation rate?
+#Which country of origin had the highest cancelation rate?
 ```{r}
 canceled<-hotel[hotel$is_canceled == 1,]
 countrycanceled<-aggregate(hotel$is_canceled, list(Country=hotel$country), mean)
 countrycanceled
 ```
-##Did the month have any effect on the cancellation within the context of the country of origin?
+#Did the month have any effect on the cancellation within the context of the country of origin?
 ```{r}
 
 ```
-##What was the average price paid for reservations that were canceled compared to those that weren't? 
+#What was the average price paid for reservations that were canceled compared to those that weren't? 
 ```{r}
 avgadris_canceled<-tapply(hotel$adr, hotel$is_canceled, mean)
 avgadris_canceled
 ```
-##What was the average price paid by those in resort hotels, and those in city hotels? Did this have any effect on the cancellation rate of each of the classifications?
+#What was the average price paid by those in resort hotels, and those in city hotels? Did this have any effect on the cancellation rate of each of the classifications?
 ```{r}
 avgadrhotel<-tapply(hotel$adr, hotel$hotel, mean)
 avgadrhotel
 ```
 
 
-##Which booking channel had the most cancellations, and by hotel classification?
+#Which booking channel had the most cancellations, and by hotel classification?
 ```{r}
 
 ```
-##How many previous cancellations repeated, and by hotel classification?
+#How many previous cancellations repeated, and by hotel classification?
 ```{r}
 
 ```
-##What was the average number of changes made to the bookings in those bookings that were canceled? What about those that weren't, and by hotel classification?
+#What was the average number of changes made to the bookings in those bookings that were canceled? What about those that weren't, and by hotel classification?
 ```{r}
 
 ```
-##Did the deposit type have any effect on the chance of cancelation? By hotel classification?
+#Did the deposit type have any effect on the chance of cancelation? By hotel classification?
 ```{r}
 
 ```
-#Group Size and Duration 
 
-##How Long are the Groups Staying?
+
+#How Long are the Groups Staying?
 ```{r}
 weekendnights <- hotel$stays_in_weekend_nights
 weekdaynights <- hotel$stays_in_week_nights
@@ -166,7 +163,6 @@ ggplot(hotel, aes(x=groupsize, fill=country)) + geom_bar(position = "stack")
 ggplot(hotel, aes(x=adr, fill=groupsize)) + geom_density(alpha=0.4) + labs(title="Lead Time by Group Size") # This is obviously a bad graph just trying some things out
 
 ```
-
 ## Do Kids cause more special requests?
 Here, we will look to see if number of children + babies is related to the number of special requests. 
 ```{r}
@@ -181,7 +177,30 @@ nonadults<-children+babies
 ```
 
 
-#Type of Hotel - TBD 
+##Average Price Per Person 
+```{r}
+priceperperson<-hotel$adr*groupsize
+
+
+```
+
+
+#Summary
+
+*adr*: average daily rate as defined by dividing the sum of all lodging transactions by the total number of staying nights
+*required_car_parking_spaces*: number of car parking spaces required by the customer
+*total_of_special_requests*: number of special requests made by the customer (e.g. twin bed or high floor)
+*reservation_status*: reservation last status, assuming one of three categories: Canceled – booking was canceled by the customer; Check-Out – customer has checked in but already departed; No-Show – customer did not check-in and did inform the hotel of the reason why
+*reservation_status_date*: date at which the last status was set. This variable can be used in conjunction with the ReservationStatus to understand when was the booking canceled or when did the customer checked-out of the hotel
+
+
+
+```{r}
+summary(hotel$adr)
+summary(hotel$required_car_parking_spaces)
+summary(hotel$total_of_special_requests)
+summary(hotel$reservation_status)
+```
 
 ## Avg Daily Rate by Type of Hotel
 ```{r}
@@ -223,38 +242,4 @@ ggplot(data = hotel) + geom_point(mapping = aes(total_of_special_requests, adr))
 ```{r}
 
 ```
-
-##Average Price Per Person 
-```{r}
-priceperperson<-hotel$adr*groupsize
-
-
-```
-
-# Time of Year 
-
-## Do Holidays impact cancelation, group size, etc? 
-## Do Holidays impact ADR?
-
-# Type of Customer 
-##What types of customers drive highest ADR?
-## What types of customers have lowest special requests?
-
-#Summary
-
-*adr*: average daily rate as defined by dividing the sum of all lodging transactions by the total number of staying nights
-*required_car_parking_spaces*: number of car parking spaces required by the customer
-*total_of_special_requests*: number of special requests made by the customer (e.g. twin bed or high floor)
-*reservation_status*: reservation last status, assuming one of three categories: Canceled – booking was canceled by the customer; Check-Out – customer has checked in but already departed; No-Show – customer did not check-in and did inform the hotel of the reason why
-*reservation_status_date*: date at which the last status was set. This variable can be used in conjunction with the ReservationStatus to understand when was the booking canceled or when did the customer checked-out of the hotel
-
-
-
-```{r}
-summary(hotel$adr)
-summary(hotel$required_car_parking_spaces)
-summary(hotel$total_of_special_requests)
-summary(hotel$reservation_status)
-```
-
 

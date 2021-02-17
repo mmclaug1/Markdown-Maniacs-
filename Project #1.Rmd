@@ -146,4 +146,10 @@ priceperperson<-hotel$adr*groupsize
 
 #Summary
 
+# Jacob's test
+
+```{r}
+summary(hotel$groupsize)
+# Are you seeing this?
+```
 

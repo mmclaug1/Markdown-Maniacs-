@@ -65,12 +65,18 @@ A number of different variables in the data seem to have relevant business takea
 
 To begin, we will do some basic descriptive analytics on a number of different variables that we think have some pretty significant business insights.
 
-#How many of the reservations, and what proportion of them are being canceled?
+#How many of the reservations and what proportion of them are being canceled?
 ```{r}
 tableis_canceled<-table(hotel$is_canceled)
 round(prop.table(tableis_canceled),3)
 
 ```
+#How many of each hotel classification (City and Resort) is being canceled?
+```{r}
+Resortis_canceled<-hotel[hotel$hotel == "Resort Hotel" & hotel$is_canceled == "1"]
+```
+
+
 #How Long are the Groups Staying?
 ```{r}
 weekendnights <- hotel$stays_in_weekend_nights

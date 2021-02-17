@@ -185,10 +185,59 @@ priceperperson<-hotel$adr*groupsize
 
 #Summary
 
-# Jacob's test
+*adr*: average daily rate as defined by dividing the sum of all lodging transactions by the total number of staying nights
+*required_car_parking_spaces*: number of car parking spaces required by the customer
+*total_of_special_requests*: number of special requests made by the customer (e.g. twin bed or high floor)
+*reservation_status*: reservation last status, assuming one of three categories: Canceled – booking was canceled by the customer; Check-Out – customer has checked in but already departed; No-Show – customer did not check-in and did inform the hotel of the reason why
+*reservation_status_date*: date at which the last status was set. This variable can be used in conjunction with the ReservationStatus to understand when was the booking canceled or when did the customer checked-out of the hotel
+
+
 
 ```{r}
-summary(hotel$groupsize)
-# Are you seeing this?
+summary(hotel$adr)
+summary(hotel$required_car_parking_spaces)
+summary(hotel$total_of_special_requests)
+summary(hotel$reservation_status)
+```
+
+## Avg Daily Rate by Type of Hotel
+```{r}
+mean(hotel$adr[hotel$hotel == "Resort Hotel"]) # avg daily rate for resort hotel
+mean(hotel$adr[hotel$hotel == "City Hotel"]) # avg daily rate for resort hotel
+```
+
+
+## Does the type of hotel influence number of car parking spaces?
+
+Not sure how deep this could go but this would more so be relevant for hotels maximizing their space. How many parking spaces should they have / could they utilize spare space another way?
+```{r}
+summary(hotel$required_car_parking_spaces)
+ggplot(data=hotel) + geom_bar(mapping = aes(required_car_parking_spaces)) # just checking # of parking spaces alone first
+```
+<br/> Update: I'm not overly interested in exploring the number of required parking spaces anymore. The **vast** majority of hotel guests require 0 parking spaces (which makes sense -- they're on vacation after all).
+
+## Does the time of year influence the number of special requests?
+
+```{r}
+
+```
+
+
+## Is there a linear relationship between avg daily rate and special requests
+
+```{r}
+lm_SpecReq_ADR <- lm(adr ~ total_of_special_requests, data=hotel) # create linear model b/w special requests and adr
+summary(lm_SpecReq_ADR)
+```
+
+```{r}
+ggplot(data = hotel) + geom_point(mapping = aes(total_of_special_requests, adr))
+```
+
+
+## Relationship between reservation status and demographics of guests (aduls/children/babies, country)
+
+```{r}
+
 ```
 

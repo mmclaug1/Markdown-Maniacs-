@@ -88,13 +88,15 @@ countrycanceled
 ```{r}
 
 ```
-#What was the average price paid for reservations that were canceled compared to those that weren't?
+#What was the average price paid for reservations that were canceled compared to those that weren't? 
 ```{r}
-
+avgadris_canceled<-tapply(hotel$adr, hotel$is_canceled, mean)
+avgadris_canceled
 ```
 #What was the average price paid by those in resort hotels, and those in city hotels? Did this have any effect on the cancellation rate of each of the classifications?
 ```{r}
-
+avgadrhotel<-tapply(hotel$adr, hotel$hotel, mean)
+avgadrhotel
 ```
 
 

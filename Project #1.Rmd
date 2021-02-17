@@ -73,9 +73,43 @@ round(prop.table(tableis_canceled),3)
 ```
 #How many of each hotel classification (City and Resort) is being canceled?
 ```{r}
-Resortis_canceled<-hotel[hotel$hotel == "Resort Hotel" & hotel$is_canceled == "1"]
+
+```
+#Which country of origin had the highest cancelation rate?
+```{r}
+
+```
+#Did the month have any effect on the cancellation within the context of the country of origin?
+```{r}
+
+```
+#What was the average price paid for reservations that were canceled compared to those that weren't?
+```{r}
+
+```
+#What was the average price paid by those in resort hotels, and those in city hotels? Did this have any effect on the cancellation rate of each of the classifications?
+```{r}
+
 ```
 
+
+#Which booking channel had the most cancellations, and by hotel classification?
+```{r}
+
+```
+#How many previous cancellations repeated, and by hotel classification?
+```{r}
+
+```
+#What was the average number of changes made to the bookings in those bookings that were canceled? What about those that weren't, and by hotel classification?
+```{r}
+
+```
+#Did the deposit type have any effect on the chance of cancelation? By hotel classification?
+```{r}
+
+```
+#
 
 #How Long are the Groups Staying?
 ```{r}

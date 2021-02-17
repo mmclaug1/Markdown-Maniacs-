@@ -436,6 +436,9 @@ round(prop.table(tableis_canceled),3)</code></pre>
 ##    0    1 
 ## 0.63 0.37</code></pre>
 <p>#How many of each hotel classification (City and Resort) is being canceled?</p>
+<pre class="r"><code>resort&lt;-hotel[hotel$hotel == &quot;Resort&quot;,]
+city&lt;-hotel[hotel$hotel == &quot;City&quot;,]
+canceled&lt;-hotel[hotel$is_canceled == &quot;1&quot;,]</code></pre>
 <p>#Which country of origin had the highest cancelation rate?</p>
 <p>#Did the month have any effect on the cancellation within the context of the country of origin?</p>
 <p>#What was the average price paid for reservations that were canceled compared to those that weren’t?</p>
@@ -510,6 +513,13 @@ ggplot(hotel, aes(x=groupsize, fill=market_segment)) + geom_bar(position = &quot
 <pre class="r"><code>priceperperson&lt;-hotel$adr*groupsize</code></pre>
 <pre><code>## Warning in Ops.factor(hotel$adr, groupsize): &#39;*&#39; not meaningful for factors</code></pre>
 <p>#Summary</p>
+</div>
+<div id="jacobs-test" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> Jacob’s test</h1>
+<pre class="r"><code>summary(hotel$groupsize)</code></pre>
+<pre><code>## Length  Class   Mode 
+##      0   NULL   NULL</code></pre>
+<pre class="r"><code># Are you seeing this?</code></pre>
 </div>
 
 

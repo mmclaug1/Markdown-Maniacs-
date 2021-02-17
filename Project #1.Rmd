@@ -73,7 +73,9 @@ round(prop.table(tableis_canceled),3)
 ```
 #How many of each hotel classification (City and Resort) is being canceled?
 ```{r}
-
+resort<-hotel[hotel$hotel == "Resort",]
+city<-hotel[hotel$hotel == "City",]
+canceled<-hotel[hotel$is_canceled == "1",]
 ```
 #Which country of origin had the highest cancelation rate?
 ```{r}

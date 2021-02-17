@@ -31,7 +31,6 @@ hotel$arrival_date_month<-as.factor(hotel$arrival_date_month)
 hotel$arrival_date_day_of_month<-as.factor(hotel$arrival_date_day_of_month)
 hotel$arrival_date_week_number<-as.factor(hotel$arrival_date_week_number)
 hotel$is_repeated_guest<-as.factor(hotel$is_repeated_guest)
-hotel$is_canceled<-as.factor(hotel$is_canceled)
 ```
 
 ```{r}

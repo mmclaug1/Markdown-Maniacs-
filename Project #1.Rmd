@@ -16,16 +16,18 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Introduction 
+A number of different variables in the data seem to have relevant business takeaways. In this section, we will analyze these relationships and provide visualizations of the relationships between the variables.
 
-Here we will put in our intro 
-#Data Import and Basic Sturcture Visualization
+To begin, we will do some basic descriptive analytics on a number of different variables that we think have some pretty significant business insights.
+
+##Data Import and Basic Sturcture Visualization
 
 ```{r}
 hotel<-read.csv("hotel_bookings.csv")
 library(ggplot2)
 ```
 
-#Data Cleaning
+##Data Cleaning
 
 ```{r}
 hotel$arrival_date_year<-as.factor(hotel$arrival_date_year)
@@ -57,12 +59,6 @@ str(hotel)
 ```
 
 Here, we cleaned the data to turn a number of different variables in the data set into factors to make the data easier to work with. 
-
-#Possible Relationships in the Data
-
-A number of different variables in the data seem to have relevant business takeaways. In this section, we will analyze these relationships and provide visualizations of the relationships between the variables.
-
-To begin, we will do some basic descriptive analytics on a number of different variables that we think have some pretty significant business insights.
 
 #Cancelation 
 ```{r}
@@ -120,7 +116,8 @@ avgadrhotel
 
 ```
 
-##Group Size and Stay Length
+#Group Size and Stay Length
+
 ##How Long are the Groups Staying?
 ```{r}
 weekendnights <- hotel$stays_in_weekend_nights
@@ -229,9 +226,14 @@ ggplot(data = hotel) + geom_point(mapping = aes(total_of_special_requests, adr))
 ```
 
 #Time of Year 
+## Do Holidays impact cancelatoins, adr, group size?
+## Are holidays affecting type of client
+## Resort impact type on holidays?
 
 #Type of Client 
-
+##Which clients have the highest adr? 
+##Which clients have the most special requests?
+## Which clients have the highest cancellation rate 
 
 #Summary
 

@@ -284,16 +284,14 @@ div.tocify {
 
 
 <p>#Data Import and Basic Sturcture Visualization</p>
-<pre class="r"><code>hotelbookings&lt;-read.csv(&quot;hotel_bookings.csv&quot;)
-hotel&lt;-hotelbookings
+<pre class="r"><code>hotel&lt;-read.csv(&quot;hotel_bookings.csv&quot;)
 library(ggplot2)</code></pre>
 <p>#Data Cleaning</p>
 <pre class="r"><code>hotel$arrival_date_year&lt;-as.factor(hotel$arrival_date_year)
 hotel$arrival_date_month&lt;-as.factor(hotel$arrival_date_month)
 hotel$arrival_date_day_of_month&lt;-as.factor(hotel$arrival_date_day_of_month)
 hotel$arrival_date_week_number&lt;-as.factor(hotel$arrival_date_week_number)
-hotel$is_repeated_guest&lt;-as.factor(hotel$is_repeated_guest)
-hotel$is_canceled&lt;-as.factor(hotel$is_canceled)</code></pre>
+hotel$is_repeated_guest&lt;-as.factor(hotel$is_repeated_guest)</code></pre>
 <pre class="r"><code>hotel$meal&lt;-as.factor(hotel$meal)
 hotel$country&lt;-as.factor(hotel$meal)
 hotel$market_segment&lt;-as.factor(hotel$market_segment)
@@ -309,14 +307,14 @@ hotel$reservation_status_date&lt;-as.factor(hotel$reservation_status_date)</code
 <div id="basic-data-visualization" class="section level2" number="0.1">
 <h2 number="0.1"><span class="header-section-number">0.1</span> Basic Data Visualization</h2>
 <pre class="r"><code>summary(hotel)</code></pre>
-<pre><code>##     hotel           is_canceled   lead_time   arrival_date_year
-##  Length:119390      0:75166     Min.   :  0   2015:21996       
-##  Class :character   1:44224     1st Qu.: 18   2016:56707       
-##  Mode  :character               Median : 69   2017:40687       
-##                                 Mean   :104                    
-##                                 3rd Qu.:160                    
-##                                 Max.   :737                    
-##                                                                
+<pre><code>##     hotel            is_canceled       lead_time   arrival_date_year
+##  Length:119390      Min.   :0.0000   Min.   :  0   2015:21996       
+##  Class :character   1st Qu.:0.0000   1st Qu.: 18   2016:56707       
+##  Mode  :character   Median :0.0000   Median : 69   2017:40687       
+##                     Mean   :0.3704   Mean   :104                    
+##                     3rd Qu.:1.0000   3rd Qu.:160                    
+##                     Max.   :1.0000   Max.   :737                    
+##                                                                     
 ##  arrival_date_month arrival_date_week_number arrival_date_day_of_month
 ##  August :13877      33     :  3580           17     : 4406            
 ##  July   :12661      30     :  3087           5      : 4317            
@@ -392,7 +390,7 @@ hotel$reservation_status_date&lt;-as.factor(hotel$reservation_status_date)</code
 <pre class="r"><code>str(hotel)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    119390 obs. of  32 variables:
 ##  $ hotel                         : chr  &quot;Resort Hotel&quot; &quot;Resort Hotel&quot; &quot;Resort Hotel&quot; &quot;Resort Hotel&quot; ...
-##  $ is_canceled                   : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 2 2 ...
+##  $ is_canceled                   : int  0 0 0 0 0 0 0 0 1 1 ...
 ##  $ lead_time                     : int  342 737 7 13 14 14 0 9 85 75 ...
 ##  $ arrival_date_year             : Factor w/ 3 levels &quot;2015&quot;,&quot;2016&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ arrival_date_month            : Factor w/ 12 levels &quot;April&quot;,&quot;August&quot;,..: 6 6 6 6 6 6 6 6 6 6 ...
@@ -433,11 +431,29 @@ round(prop.table(tableis_canceled),3)</code></pre>
 <pre><code>## 
 ##    0    1 
 ## 0.63 0.37</code></pre>
-<p>#How many of each hotel classification (City and Resort) is being canceled?</p>
-<pre class="r"><code>resort&lt;-hotel[hotel$hotel == &quot;Resort&quot;,]
-city&lt;-hotel[hotel$hotel == &quot;City&quot;,]
-canceled&lt;-hotel[hotel$is_canceled == &quot;1&quot;,]</code></pre>
+<p>#How many of each hotel classification (Resort and City) is being canceled, and at what proportion?</p>
+<pre class="r"><code>resort&lt;-hotel[hotel$hotel == &quot;Resort Hotel&quot;,]
+city&lt;-hotel[hotel$hotel == &quot;City Hotel&quot;,]
+resortcanceled&lt;-hotel[hotel$hotel == &quot;Resort Hotel&quot; &amp; hotel$is_canceled == 1,]
+cityiscanceled&lt;-hotel[hotel$hotel == &quot;City Hotel&quot; &amp; hotel$is_canceled == 1,]
+nrow(resortcanceled)</code></pre>
+<pre><code>## [1] 11122</code></pre>
+<pre class="r"><code>nrow(cityiscanceled)</code></pre>
+<pre><code>## [1] 33102</code></pre>
+<pre class="r"><code>nrow(resortcanceled)/nrow(resort)</code></pre>
+<pre><code>## [1] 0.2776335</code></pre>
+<pre class="r"><code>nrow(cityiscanceled)/nrow(city)</code></pre>
+<pre><code>## [1] 0.4172696</code></pre>
 <p>#Which country of origin had the highest cancelation rate?</p>
+<pre class="r"><code>canceled&lt;-hotel[hotel$is_canceled == 1,]
+countrycanceled&lt;-aggregate(hotel$is_canceled, list(Country=hotel$country), mean)
+countrycanceled</code></pre>
+<pre><code>##     Country         x
+## 1        BB 0.3738490
+## 2        FB 0.5989975
+## 3        HB 0.3446035
+## 4        SC 0.3723944
+## 5 Undefined 0.2446536</code></pre>
 <p>#Did the month have any effect on the cancellation within the context of the country of origin?</p>
 <p>#What was the average price paid for reservations that were canceled compared to those that weren’t?</p>
 <p>#What was the average price paid by those in resort hotels, and those in city hotels? Did this have any effect on the cancellation rate of each of the classifications?</p>

@@ -18,8 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #Data Import and Basic Sturcture Visualization
 
 ```{r}
-hotelbookings<-read.csv("hotel_bookings.csv")
-hotel<-hotelbookings
+hotel<-read.csv("hotel_bookings.csv")
 library(ggplot2)
 ```
 
@@ -66,17 +65,24 @@ To begin, we will do some basic descriptive analytics on a number of different v
 ```{r}
 tableis_canceled<-table(hotel$is_canceled)
 round(prop.table(tableis_canceled),3)
-
 ```
-#How many of each hotel classification (City and Resort) is being canceled?
+#How many of each hotel classification (Resort and City) is being canceled, and at what proportion?
 ```{r}
-resort<-hotel[hotel$hotel == "Resort",]
-city<-hotel[hotel$hotel == "City",]
-canceled<-hotel[hotel$is_canceled == "1",]
+resort<-hotel[hotel$hotel == "Resort Hotel",]
+city<-hotel[hotel$hotel == "City Hotel",]
+resortcanceled<-hotel[hotel$hotel == "Resort Hotel" & hotel$is_canceled == 1,]
+cityiscanceled<-hotel[hotel$hotel == "City Hotel" & hotel$is_canceled == 1,]
+nrow(resortcanceled)
+nrow(cityiscanceled)
+nrow(resortcanceled)/nrow(resort)
+nrow(cityiscanceled)/nrow(city)
+
 ```
 #Which country of origin had the highest cancelation rate?
 ```{r}
-
+canceled<-hotel[hotel$is_canceled == 1,]
+countrycanceled<-aggregate(hotel$is_canceled, list(Country=hotel$country), mean)
+countrycanceled
 ```
 #Did the month have any effect on the cancellation within the context of the country of origin?
 ```{r}

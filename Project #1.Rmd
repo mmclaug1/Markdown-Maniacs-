@@ -226,9 +226,58 @@ ggplot(data = hotel) + geom_point(mapping = aes(total_of_special_requests, adr))
 ```
 
 #Time of Year 
-## Do Holidays impact cancelatoins, adr, group size?
-## Are holidays affecting type of client
-## Resort impact type on holidays?
+## Do Holidays impact ADR? 
+```{r}
+mean(hotel$adr) #Find Adr on average
+
+
+
+tableJuly4 = hotel[hotel$arrival_date_month == "July" & hotel$arrival_date_day_of_month== 3 | hotel$arrival_date_day_of_month==4,] #Create Table to isolate specifc columns that we want
+
+round(mean(tableJuly4$adr, na.rm= TRUE),2) #Find mean for that holiday 
+
+
+tablenewyearseve = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 31,]
+round(mean(tablenewyearseve$adr, na.rm= TRUE),2) #repeat
+
+tableXmas = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 24 | hotel$arrival_date_day_of_month==25,]
+round(mean(tableXmas$adr, na.rm= TRUE),2)
+
+tableValentines = hotel[hotel$arrival_date_month == "February" & hotel$arrival_date_day_of_month== 13 | hotel$arrival_date_day_of_month==14,]
+round(mean(tableValentines$adr, na.rm= TRUE),2)
+
+```
+From the above information we have pretty interesting findings. When we look at the average ADR across the entire year, and compare that to the ADR for reservations during the Holidays, we see that the Hotel is actually charging the same price or lower for most holidays. Some of the typically most expensive holidays to travel (July 4th, Xmas, Valentines) have roughly the same ADR as the overall average. Only the ADR for New Years is higher, but only by 29%, whereas some hotes raise prices by as much as 100% during busy holidays. 
+
+## Does Resort type impact ADR on holidays?
+
+```{r}
+tableResort = hotel[hotel$hotel == "Resort Hotel",] #Here we are doing the same code as above, but also isolation for type of hotel to identify whether this is a hotel specifc problem 
+mean(tableResort$adr)
+
+tableJuly4Resort = hotel[hotel$arrival_date_month == "July" & hotel$arrival_date_day_of_month== 3 | hotel$arrival_date_day_of_month==4 & hotel$hotel== "Resort Hotel",]
+
+round(mean(tableJuly4Resort$adr, na.rm= TRUE),2)
+tableCity = hotel[hotel$hotel == "City Hotel",]
+mean(tableCity$adr)
+
+tableJuly4City = hotel[hotel$arrival_date_month == "July" & hotel$arrival_date_day_of_month== 3 | hotel$arrival_date_day_of_month==4 & hotel$hotel== "City Hotel",]
+
+round(mean(tableJuly4City$adr, na.rm= TRUE),2)
+
+
+```
+```{r}
+tableXmasCity = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 24 | hotel$arrival_date_day_of_month==25 & hotel$hotel=="City Hotel",]
+round(mean(tableXmasCity$adr, na.rm= TRUE),2)
+
+
+TableXmasResort = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 24 | hotel$arrival_date_day_of_month==25 & hotel$hotel=="Resort Hotel",]
+round(mean(TableXmasResort$adr, na.rm= TRUE),2)
+
+
+```
+From the above information we can also see that the problem is not hotel specifc. Both City and Resort hotels charge roughly the same ADR overall throughout the year as they do on a few key holidays (shown here are Christmas and July 4th)
 
 #Type of Client 
 ##Which clients have the highest adr? 

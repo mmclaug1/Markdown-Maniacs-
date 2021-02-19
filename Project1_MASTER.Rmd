@@ -116,67 +116,118 @@ avgadrhotel
 
 ```
 
-# Group Size and Stay Length
+# Group Size, Length of Stay, and Type
+In this section we will be analyzing the impact of size of group, type of group, and length of stay on different variable such as adr, and number of speical requests. Since adr is directly related to the amount of revenue we will recieve, it is the key variable analyzed in this section. However, we also look at number of special requests, since it is likely that a higher number of special requests impacts the costs for the hotel, thus making a customer less profitable. 
 
-## How Long are the Groups Staying?
+## Group Stay Duration 
 ```{r}
-weekendnights <- hotel$stays_in_weekend_nights
-weekdaynights <- hotel$stays_in_week_nights
-totalnights <-weekendnights+weekdaynights
+totalnights<-hotel$stays_in_week_nights+hotel$stays_in_weekend_nights
 
 totalnights <- as.factor(totalnights)
 
-plot(totalnights,ylab="Number of Reservations", xlab="Number of Nights Stayed", col="purple")
+plot(totalnights,ylab="Number of Reservations", xlab="Number of Nights Stayed", main="Number of nights Stayed per Reservation", col="purple")
+
+round(mean(hotel$stays_in_week_nights)+mean(hotel$stays_in_weekend_nights),2)
+median(hotel$stays_in_week_nights+hotel$stays_in_weekend_nights)
+```
+Here we can see the average number of nights stayed by hotel guests. First, we combine stays in weeknights with stays during the weekend to obtain total nights per visit. The plot shows that a majority of guests are staying between 1 to 5 days, with the average being 3.43 nights, and the median being 3 nights. This is substantially higher than the national average stay of about 1.8 days (Business Travel News)
+## Stay Duration vs. ADR
+```{r}
+staydurationadr<-aggregate(adr ~ totalnights, data=hotel, mean, na.rm=TRUE)
+
+staydurationadr
 
 ```
-## How big are the groups that are staying?
+
+## Group Size
 Here, we are looking to find data related to group size. Since the current data has people grouped into three different columns (adults, children and babies) we will first create a variable to look at the total number of people per group. From this, we will look to compare group size to other vairables. 
 ```{r}
 
-adults <-hotel$adults
-children <-hotel$children
-babies <- hotel$babies
-groupsize <-adults+children+babies
+
+groupsize <-hotel$adults+hotel$children+hotel$babies
 
 groupsize <- as.factor(groupsize)
 
-plot(groupsize, xlim=c(1,6),ylab="Number of Reservations", xlab="People in Reservation", col="purple")
+plot(groupsize, ylab="Number of Reservations", xlab="People in Reservation", main="Group Size per Reservation",col="purple")
 
+mean(hotel$adults+hotel$children+hotel$babies, na.rm = TRUE)
+median(hotel$adults+hotel$children+hotel$babies, na.rm = TRUE)
 
-meanadrbygroup <- round(tapply(hotel$adr,groupsize, mean, na.rm=TRUE), 3)
-
-meanadrbygroup
-
-
-ggplot(hotel, aes(x=groupsize, y=adr))+ geom_bar(stat = "identity")
- ##Not sure what graph to do here but theres something here
 
 ```
+Here we combine the adults, children, and babies to find the total group size. On average, reservations contain slightly fewer than 2 people. 
 
+
+## Group Size Impact on ADR
+```{r}
+groupsizeadr<-aggregate(adr ~ groupsize, data=hotel, mean, na.rm=TRUE)
+
+groupsizeadr
+
+```
+More importantly than just group size, we analyzed the impact of group size on ADR. Here we can see adr increase with group size up to 5 people. Although we don't have data on number of rooms reserved (if more than one) We can see that once the group size is greater than two, revenue per night increases substantially. If in the same number of rooms, the costs also likely do not increase much with added people. 
+
+## Market Segment Group Type vs. ADR
+Here were looking at groups by market segment. 
 ```{r}
 library(ggplot2)
 
-ggplot(hotel, aes(x=groupsize, fill=market_segment)) + geom_bar(position = "stack")
+ggplot(hotel, aes(x=groupsize, fill=market_segment, main= "Number of Reservations by Group size and Market Segment")) + geom_bar(position = "stack")
 
-ggplot(hotel, aes(x=groupsize, fill=country)) + geom_bar(position = "stack")
+marketsegmentadr<-aggregate(adr ~ market_segment, data=hotel, mean, na.rm=TRUE)
 
-ggplot(hotel, aes(x=adr, fill=groupsize)) + geom_density(alpha=0.4) + labs(title="Lead Time by Group Size") # This is obviously a bad graph just trying some things out
+
+plot(hotel$market_segment, main="Number of Reservations by Market Segment", las=2, col="purple")
+
+
+
+marketsegmentadr
 
 ```
-## Do Kids cause more special requests?
-Here, we will look to see if number of children + babies is related to the number of special requests. 
+From the above graphs and information, we can see that group size doesn't have a noticiable impact on the market segment that books a reservation. More interestingly though, is looking at the data regarding which market segments book most frequently, and the average ADR of those segments. Online TA and Offline TA TO are the most frequently used booking methods, however, Online is more than $30 higher per day in ADR than offline booking (see table). This might suggest that the Hotel should shift towards exclusively online booking, as it is possible the room disocount are higher for offline booking. 
+
+## Kids Impact on Special Requests 
+Here, we will look to see if number of children + babies is related to the number of special requests, as we suspect that a higher number of special requests will lead to larger costs for the hotel.  
 ```{r}
 
 mean(hotel$total_of_special_requests, na.rm=TRUE)
 
-nonadults<-children+babies
+groupswithoutkids<-hotel[hotel$babies ==0 & hotel$children ==0,] #Groups with no kids
+groupswithkids <- hotel[hotel$babies> 0 | hotel$children> 0,] #Groups with at least 1 child or baby
 
-#Basically what im looking to do here is find out whether children and babies increase number of speical requests. Any ideas?
+mean(groupswithkids$total_of_special_requests, na.rm=TRUE)
+
+mean(groupswithoutkids$total_of_special_requests, na.rm = TRUE)
+
+
 
 
 ```
+Here we can see very interesting results that confirm our hypothesis. First, the average number of special requests for all reservations is .57. However, groups with children or babies almost average double that number at .927 per reservation while groups without any children or babies average only .54 special requests. 
+## Kids Impact on Special Requests and ADR
+```{r}
+groupswithkids <- hotel[hotel$adults>=2 & hotel$babies> 0 | hotel$children> 0, ]
 
-# TBD (Jacob Code)
+groupswithadults <- hotel[hotel$adults>=3,]
+
+mean(groupswithadults$adr)
+
+mean(groupswithkids$adr, na.rm=TRUE) 
+```
+In addition, we wanted to check if groups with kids are spending more money on average (to potentially cancelout the cost of more special requests). However, from these results we can see that the adr of groups with children and babies and the adr of groups with just adults is roughly the same. This means that groups with kids are much more costly to the hotel without driving additional revenue. 
+
+## Extra to Fuck around with if neccesary 
+```{r}
+
+ggplot(hotel, 
+       aes(x = arrival_date_month, 
+           y =mean(adr))) +
+  geom_bar(stat = "identity")
+
+```
+
+# Jacob Code -Not sure about header
+
 ## Average Price Per Person 
 ```{r}
 priceperperson<-hotel$adr*groupsize

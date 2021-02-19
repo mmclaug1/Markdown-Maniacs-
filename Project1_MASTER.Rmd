@@ -1,0 +1,304 @@
+---
+title: 'Project #1'
+author: "Kenneth Andrysiak, Joel Revo, Alec Palo, Jacob Cohen, Michael McLaughlan"
+date: "2/10/2021"
+output: 
+  html_document: 
+    code_folding: hide
+    number_sections: true 
+    toc: true
+    toc_float: 
+      collapsed: true  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction 
+A number of different variables in the data seem to have relevant business takeaways. In this section, we will analyze these relationships and provide visualizations of the relationships between the variables.
+
+To begin, we will do some basic descriptive analytics on a number of different variables that we think have some pretty significant business insights.
+
+##Data Import and Basic Sturcture Visualization
+
+```{r}
+hotel<-read.csv("hotel_bookings.csv")
+library(ggplot2)
+```
+
+##Data Cleaning
+
+```{r}
+hotel$arrival_date_year<-as.factor(hotel$arrival_date_year)
+hotel$arrival_date_month<-as.factor(hotel$arrival_date_month)
+hotel$arrival_date_day_of_month<-as.factor(hotel$arrival_date_day_of_month)
+hotel$arrival_date_week_number<-as.factor(hotel$arrival_date_week_number)
+hotel$is_repeated_guest<-as.factor(hotel$is_repeated_guest)
+```
+
+```{r}
+hotel$meal<-as.factor(hotel$meal)
+hotel$country<-as.factor(hotel$meal)
+hotel$market_segment<-as.factor(hotel$market_segment)
+hotel$distribution_channel<-as.factor(hotel$distribution_channel)
+hotel$reserved_room_type<-as.factor(hotel$reserved_room_type)
+hotel$assigned_room_type<-as.factor(hotel$assigned_room_type)
+hotel$deposit_type<-as.factor(hotel$deposit_type)
+hotel$agent<-as.factor(hotel$agent)
+hotel$company<-as.factor(hotel$company)
+hotel$customer_type<-as.factor(hotel$customer_type)
+hotel$reservation_status<-as.factor(hotel$reservation_status)
+hotel$reservation_status_date<-as.factor(hotel$reservation_status_date)
+```
+
+## Basic Data Visualization
+```{r}
+summary(hotel)
+str(hotel)
+```
+
+Here, we cleaned the data to turn a number of different variables in the data set into factors to make the data easier to work with. 
+
+#Cancelation 
+```{r}
+tableis_canceled<-table(hotel$is_canceled)
+round(prop.table(tableis_canceled),3)
+```
+##How many of each hotel classification (Resort and City) is being canceled, and at what proportion?
+```{r}
+resort<-hotel[hotel$hotel == "Resort Hotel",]
+city<-hotel[hotel$hotel == "City Hotel",]
+resortcanceled<-hotel[hotel$hotel == "Resort Hotel" & hotel$is_canceled == 1,]
+cityiscanceled<-hotel[hotel$hotel == "City Hotel" & hotel$is_canceled == 1,]
+nrow(resortcanceled)
+nrow(cityiscanceled)
+nrow(resortcanceled)/nrow(resort)
+nrow(cityiscanceled)/nrow(city)
+
+```
+##Which country of origin had the highest cancelation rate?
+```{r}
+canceled<-hotel[hotel$is_canceled == 1,]
+countrycanceled<-aggregate(hotel$is_canceled, list(Country=hotel$country), mean)
+countrycanceled
+```
+##Did the month have any effect on the cancellation within the context of the country of origin?
+```{r}
+
+```
+##What was the average price paid for reservations that were canceled compared to those that weren't? 
+```{r}
+avgadris_canceled<-tapply(hotel$adr, hotel$is_canceled, mean)
+avgadris_canceled
+```
+##What was the average price paid by those in resort hotels, and those in city hotels? Did this have any effect on the cancellation rate of each of the classifications?
+```{r}
+avgadrhotel<-tapply(hotel$adr, hotel$hotel, mean)
+avgadrhotel
+```
+
+
+##Which booking channel had the most cancellations, and by hotel classification?
+```{r}
+
+```
+##How many previous cancellations repeated, and by hotel classification?
+```{r}
+
+```
+##What was the average number of changes made to the bookings in those bookings that were canceled? What about those that weren't, and by hotel classification?
+```{r}
+
+```
+##Did the deposit type have any effect on the chance of cancelation? By hotel classification?
+```{r}
+
+```
+
+#Group Size and Stay Length
+
+##How Long are the Groups Staying?
+```{r}
+weekendnights <- hotel$stays_in_weekend_nights
+weekdaynights <- hotel$stays_in_week_nights
+totalnights <-weekendnights+weekdaynights
+
+totalnights <- as.factor(totalnights)
+
+plot(totalnights,ylab="Number of Reservations", xlab="Number of Nights Stayed", col="purple")
+
+```
+##How big are the groups that are staying?
+Here, we are looking to find data related to group size. Since the current data has people grouped into three different columns (adults, children and babies) we will first create a variable to look at the total number of people per group. From this, we will look to compare group size to other vairables. 
+```{r}
+
+adults <-hotel$adults
+children <-hotel$children
+babies <- hotel$babies
+groupsize <-adults+children+babies
+
+groupsize <- as.factor(groupsize)
+
+plot(groupsize, xlim=c(1,6),ylab="Number of Reservations", xlab="People in Reservation", col="purple")
+
+
+meanadrbygroup <- round(tapply(hotel$adr,groupsize, mean, na.rm=TRUE), 3)
+
+meanadrbygroup
+
+
+ggplot(hotel, aes(x=groupsize, y=adr))+ geom_bar(stat = "identity")
+ ##Not sure what graph to do here but theres something here
+
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(hotel, aes(x=groupsize, fill=market_segment)) + geom_bar(position = "stack")
+
+ggplot(hotel, aes(x=groupsize, fill=country)) + geom_bar(position = "stack")
+
+ggplot(hotel, aes(x=adr, fill=groupsize)) + geom_density(alpha=0.4) + labs(title="Lead Time by Group Size") # This is obviously a bad graph just trying some things out
+
+```
+## Do Kids cause more special requests?
+Here, we will look to see if number of children + babies is related to the number of special requests. 
+```{r}
+
+mean(hotel$total_of_special_requests, na.rm=TRUE)
+
+nonadults<-children+babies
+
+#Basically what im looking to do here is find out whether children and babies increase number of speical requests. Any ideas?
+
+
+```
+
+#TBD (Jacob Code)
+##Average Price Per Person 
+```{r}
+priceperperson<-hotel$adr*groupsize
+
+
+```
+
+## Avg Daily Rate by Type of Hotel
+```{r}
+mean(hotel$adr[hotel$hotel == "Resort Hotel"]) # avg daily rate for resort hotel
+mean(hotel$adr[hotel$hotel == "City Hotel"]) # avg daily rate for resort hotel
+```
+
+
+## Does the type of hotel influence number of car parking spaces?
+
+Not sure how deep this could go but this would more so be relevant for hotels maximizing their space. How many parking spaces should they have / could they utilize spare space another way?
+```{r}
+summary(hotel$required_car_parking_spaces)
+ggplot(data=hotel) + geom_bar(mapping = aes(required_car_parking_spaces)) # just checking # of parking spaces alone first
+```
+<br/> Update: I'm not overly interested in exploring the number of required parking spaces anymore. The **vast** majority of hotel guests require 0 parking spaces (which makes sense -- they're on vacation after all).
+
+## Does the time of year influence the number of special requests?
+
+```{r}
+
+```
+
+
+## Is there a linear relationship between avg daily rate and special requests
+
+```{r}
+lm_SpecReq_ADR <- lm(adr ~ total_of_special_requests, data=hotel) # create linear model b/w special requests and adr
+summary(lm_SpecReq_ADR)
+```
+
+```{r}
+ggplot(data = hotel) + geom_point(mapping = aes(total_of_special_requests, adr))
+```
+
+
+## Relationship between reservation status and demographics of guests (aduls/children/babies, country)
+
+```{r}
+
+```
+
+#Time of Year 
+## Do Holidays impact ADR? 
+```{r}
+mean(hotel$adr) #Find Adr on average
+
+
+
+tableJuly4 = hotel[hotel$arrival_date_month == "July" & hotel$arrival_date_day_of_month== 3 | hotel$arrival_date_day_of_month==4,] #Create Table to isolate specifc columns that we want
+
+round(mean(tableJuly4$adr, na.rm= TRUE),2) #Find mean for that holiday 
+
+
+tablenewyearseve = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 31,]
+round(mean(tablenewyearseve$adr, na.rm= TRUE),2) #repeat
+
+tableXmas = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 24 | hotel$arrival_date_day_of_month==25,]
+round(mean(tableXmas$adr, na.rm= TRUE),2)
+
+tableValentines = hotel[hotel$arrival_date_month == "February" & hotel$arrival_date_day_of_month== 13 | hotel$arrival_date_day_of_month==14,]
+round(mean(tableValentines$adr, na.rm= TRUE),2)
+
+```
+From the above information we have pretty interesting findings. When we look at the average ADR across the entire year, and compare that to the ADR for reservations during the Holidays, we see that the Hotel is actually charging the same price or lower for most holidays. Some of the typically most expensive holidays to travel (July 4th, Xmas, Valentines) have roughly the same ADR as the overall average. Only the ADR for New Years is higher, but only by 29%, whereas some hotes raise prices by as much as 100% during busy holidays. 
+
+## Does Resort type impact ADR on holidays?
+
+```{r}
+tableResort = hotel[hotel$hotel == "Resort Hotel",] #Here we are doing the same code as above, but also isolation for type of hotel to identify whether this is a hotel specifc problem 
+mean(tableResort$adr)
+
+tableJuly4Resort = hotel[hotel$arrival_date_month == "July" & hotel$arrival_date_day_of_month== 3 | hotel$arrival_date_day_of_month==4 & hotel$hotel== "Resort Hotel",]
+
+round(mean(tableJuly4Resort$adr, na.rm= TRUE),2)
+tableCity = hotel[hotel$hotel == "City Hotel",]
+mean(tableCity$adr)
+
+tableJuly4City = hotel[hotel$arrival_date_month == "July" & hotel$arrival_date_day_of_month== 3 | hotel$arrival_date_day_of_month==4 & hotel$hotel== "City Hotel",]
+
+round(mean(tableJuly4City$adr, na.rm= TRUE),2)
+
+
+```
+```{r}
+tableXmasCity = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 24 | hotel$arrival_date_day_of_month==25 & hotel$hotel=="City Hotel",]
+round(mean(tableXmasCity$adr, na.rm= TRUE),2)
+
+
+TableXmasResort = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 24 | hotel$arrival_date_day_of_month==25 & hotel$hotel=="Resort Hotel",]
+round(mean(TableXmasResort$adr, na.rm= TRUE),2)
+
+
+```
+From the above information we can also see that the problem is not hotel specifc. Both City and Resort hotels charge roughly the same ADR overall throughout the year as they do on a few key holidays (shown here are Christmas and July 4th)
+
+#Type of Client 
+##Which clients have the highest adr? 
+##Which clients have the most special requests?
+## Which clients have the highest cancellation rate 
+
+#Summary
+
+*adr*: average daily rate as defined by dividing the sum of all lodging transactions by the total number of staying nights
+*required_car_parking_spaces*: number of car parking spaces required by the customer
+*total_of_special_requests*: number of special requests made by the customer (e.g. twin bed or high floor)
+*reservation_status*: reservation last status, assuming one of three categories: Canceled – booking was canceled by the customer; Check-Out – customer has checked in but already departed; No-Show – customer did not check-in and did inform the hotel of the reason why
+*reservation_status_date*: date at which the last status was set. This variable can be used in conjunction with the ReservationStatus to understand when was the booking canceled or when did the customer checked-out of the hotel
+
+
+
+```{r}
+summary(hotel$adr)
+summary(hotel$required_car_parking_spaces)
+summary(hotel$total_of_special_requests)
+summary(hotel$reservation_status)
+```
+
+

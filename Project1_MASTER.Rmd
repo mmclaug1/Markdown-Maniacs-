@@ -83,7 +83,7 @@ canceled<-hotel[hotel$is_canceled == 1,]
 countrycanceled<-aggregate(hotel$is_canceled, list(Country=hotel$country), mean)
 countrycanceled
 ```
-##Did the month have any effect on the cancellation within the context of the country of origin?
+## Did the month have any effect on the cancellation within the context of the country of origin?
 ```{r}
 
 ```

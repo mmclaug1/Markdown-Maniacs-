@@ -20,14 +20,14 @@ A number of different variables in the data seem to have relevant business takea
 
 To begin, we will do some basic descriptive analytics on a number of different variables that we think have some pretty significant business insights.
 
-##Data Import and Basic Sturcture Visualization
+## Data Import and Basic Sturcture Visualization
 
 ```{r}
 hotel<-read.csv("hotel_bookings.csv")
 library(ggplot2)
 ```
 
-##Data Cleaning
+## Data Cleaning
 
 ```{r}
 hotel$arrival_date_year<-as.factor(hotel$arrival_date_year)
@@ -60,12 +60,12 @@ str(hotel)
 
 Here, we cleaned the data to turn a number of different variables in the data set into factors to make the data easier to work with. 
 
-#Cancelation 
+# Cancelation 
 ```{r}
 tableis_canceled<-table(hotel$is_canceled)
 round(prop.table(tableis_canceled),3)
 ```
-##How many of each hotel classification (Resort and City) is being canceled, and at what proportion?
+## How many of each hotel classification (Resort and City) is being canceled, and at what proportion?
 ```{r}
 resort<-hotel[hotel$hotel == "Resort Hotel",]
 city<-hotel[hotel$hotel == "City Hotel",]
@@ -77,7 +77,7 @@ nrow(resortcanceled)/nrow(resort)
 nrow(cityiscanceled)/nrow(city)
 
 ```
-##Which country of origin had the highest cancelation rate?
+## Which country of origin had the highest cancelation rate?
 ```{r}
 canceled<-hotel[hotel$is_canceled == 1,]
 countrycanceled<-aggregate(hotel$is_canceled, list(Country=hotel$country), mean)
@@ -87,38 +87,38 @@ countrycanceled
 ```{r}
 
 ```
-##What was the average price paid for reservations that were canceled compared to those that weren't? 
+## What was the average price paid for reservations that were canceled compared to those that weren't? 
 ```{r}
 avgadris_canceled<-tapply(hotel$adr, hotel$is_canceled, mean)
 avgadris_canceled
 ```
-##What was the average price paid by those in resort hotels, and those in city hotels? Did this have any effect on the cancellation rate of each of the classifications?
+## What was the average price paid by those in resort hotels, and those in city hotels? Did this have any effect on the cancellation rate of each of the classifications?
 ```{r}
 avgadrhotel<-tapply(hotel$adr, hotel$hotel, mean)
 avgadrhotel
 ```
 
 
-##Which booking channel had the most cancellations, and by hotel classification?
+## Which booking channel had the most cancellations, and by hotel classification?
 ```{r}
 
 ```
-##How many previous cancellations repeated, and by hotel classification?
+## How many previous cancellations repeated, and by hotel classification?
 ```{r}
 
 ```
-##What was the average number of changes made to the bookings in those bookings that were canceled? What about those that weren't, and by hotel classification?
+## What was the average number of changes made to the bookings in those bookings that were canceled? What about those that weren't, and by hotel classification?
 ```{r}
 
 ```
-##Did the deposit type have any effect on the chance of cancelation? By hotel classification?
+## Did the deposit type have any effect on the chance of cancelation? By hotel classification?
 ```{r}
 
 ```
 
-#Group Size and Stay Length
+# Group Size and Stay Length
 
-##How Long are the Groups Staying?
+## How Long are the Groups Staying?
 ```{r}
 weekendnights <- hotel$stays_in_weekend_nights
 weekdaynights <- hotel$stays_in_week_nights
@@ -129,7 +129,7 @@ totalnights <- as.factor(totalnights)
 plot(totalnights,ylab="Number of Reservations", xlab="Number of Nights Stayed", col="purple")
 
 ```
-##How big are the groups that are staying?
+## How big are the groups that are staying?
 Here, we are looking to find data related to group size. Since the current data has people grouped into three different columns (adults, children and babies) we will first create a variable to look at the total number of people per group. From this, we will look to compare group size to other vairables. 
 ```{r}
 
@@ -176,8 +176,8 @@ nonadults<-children+babies
 
 ```
 
-#TBD (Jacob Code)
-##Average Price Per Person 
+# TBD (Jacob Code)
+## Average Price Per Person 
 ```{r}
 priceperperson<-hotel$adr*groupsize
 
@@ -225,7 +225,7 @@ ggplot(data = hotel) + geom_point(mapping = aes(total_of_special_requests, adr))
 
 ```
 
-#Time of Year 
+# Time of Year 
 ## Do Holidays impact ADR? 
 ```{r}
 mean(hotel$adr) #Find Adr on average
@@ -279,12 +279,12 @@ round(mean(TableXmasResort$adr, na.rm= TRUE),2)
 ```
 From the above information we can also see that the problem is not hotel specifc. Both City and Resort hotels charge roughly the same ADR overall throughout the year as they do on a few key holidays (shown here are Christmas and July 4th)
 
-#Type of Client 
-##Which clients have the highest adr? 
-##Which clients have the most special requests?
+# Type of Client 
+## Which clients have the highest adr? 
+## Which clients have the most special requests?
 ## Which clients have the highest cancellation rate 
 
-#Summary
+# Summary
 
 *adr*: average daily rate as defined by dividing the sum of all lodging transactions by the total number of staying nights
 *required_car_parking_spaces*: number of car parking spaces required by the customer

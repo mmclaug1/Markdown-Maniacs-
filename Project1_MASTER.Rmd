@@ -15,6 +15,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
 # Introduction 
 A number of different variables in the data seem to have relevant business takeaways. In this section, we will analyze these relationships and provide visualizations of the relationships between the variables.
 
@@ -39,7 +40,7 @@ hotel$is_repeated_guest<-as.factor(hotel$is_repeated_guest)
 
 ```{r}
 hotel$meal<-as.factor(hotel$meal)
-hotel$country<-as.factor(hotel$meal)
+hotel$country<-as.factor(hotel$country)
 hotel$market_segment<-as.factor(hotel$market_segment)
 hotel$distribution_channel<-as.factor(hotel$distribution_channel)
 hotel$reserved_room_type<-as.factor(hotel$reserved_room_type)
@@ -61,60 +62,105 @@ str(hotel)
 Here, we cleaned the data to turn a number of different variables in the data set into factors to make the data easier to work with. 
 
 # Cancelation 
+
+We are focusing on cancellations, because they, logically, have an impact on revenue. We will analyze its connection to other variables in the data we were provided and answer questions that will give insight into how the business should operate moving forward.
+
+## What proportion of reservations are being canceled?
 ```{r}
 tableis_canceled<-table(hotel$is_canceled)
 round(prop.table(tableis_canceled),3)
 ```
+What we see here is that roughly 63% of all of the reservations weren't canceled and the other 37% were. What does that mean for us? Well, it gives us context on how many bookings we can list to the public to maximize our revenue with the expectation that people will cancel their reservations. This will allow us to work at optimal capacity and improve efficiency.
+
 ## How many of each hotel classification (Resort and City) is being canceled, and at what proportion?
+### Number of Resort Hotels Canceled
 ```{r}
 resort<-hotel[hotel$hotel == "Resort Hotel",]
 city<-hotel[hotel$hotel == "City Hotel",]
 resortcanceled<-hotel[hotel$hotel == "Resort Hotel" & hotel$is_canceled == 1,]
 cityiscanceled<-hotel[hotel$hotel == "City Hotel" & hotel$is_canceled == 1,]
 nrow(resortcanceled)
-nrow(cityiscanceled)
-nrow(resortcanceled)/nrow(resort)
-nrow(cityiscanceled)/nrow(city)
-
 ```
+
+### Number of City Hotels Canceled
+```{r}
+nrow(cityiscanceled)
+```
+
+### Proportion of Resort Hotels Canceled
+
+```{r}
+round(nrow(resortcanceled)/nrow(resort),3)
+```
+
+### Proportion of City Hotels Canceled
+```{r}
+round(nrow(cityiscanceled)/nrow(city),3)
+```
+
+### Number of Reservations Canceled by Hotel Classification
+```{r}
+ggplot(hotel, aes(x=is_canceled, fill = hotel)) + geom_bar() +scale_x_continuous(breaks = seq(0,1))  
+```
+This graph illustrates the idea presented above in our comments on the cancellation rate. It gives us more context on how many room reservations we should be listing at either hotel classification. We see roughly 41.7% of City Hotels are canceled, compared to 27.8% in Resort Hotels, which tells us that we should be listing more bookings at City hotels to drive revenue.
+
 ## Which country of origin had the highest cancelation rate?
 ```{r}
 canceled<-hotel[hotel$is_canceled == 1,]
 countrycanceled<-aggregate(hotel$is_canceled, list(Country=hotel$country), mean)
-countrycanceled
-```
-## Did the month have any effect on the cancellation within the context of the country of origin?
-```{r}
 
 ```
+The purpose of answering this question was to get a sense of the different markets that we should be focusing on moving forward, while also learning how to target those markets strategically. 
+
 ## What was the average price paid for reservations that were canceled compared to those that weren't? 
 ```{r}
 avgadris_canceled<-tapply(hotel$adr, hotel$is_canceled, mean)
 avgadris_canceled
+ggplot(hotel, aes(x=adr)) +geom_histogram(binwidth = 25) +xlim(0,350) 
 ```
+
+
 ## What was the average price paid by those in resort hotels, and those in city hotels? Did this have any effect on the cancellation rate of each of the classifications?
 ```{r}
 avgadrhotel<-tapply(hotel$adr, hotel$hotel, mean)
 avgadrhotel
+summary(avgadrhotel)
 ```
 
 
 ## Which booking channel had the most cancellations, and by hotel classification?
 ```{r}
-
+aggregate(hotel$is_canceled, list(hotel=hotel$hotel, DistributionChannel=hotel$distribution_channel), mean)
 ```
+
 ## How many previous cancellations repeated, and by hotel classification?
 ```{r}
-
+canceledagain<-ifelse(hotel$is_canceled == hotel$previous_cancellations, 1, 0)
+sum(canceledagain)
+notcanceledagain<-ifelse(hotel$is_canceled != hotel$previous_bookings_not_canceled, 1, 0)
+sum(notcanceledagain)
+avgadragain<-tapply(hotel$adr,canceledagain, mean, na.rm = TRUE)
+avgadrnot<-tapply(hotel$adr, notcanceledagain, mean, na.rm = TRUE)
+avgadragain
+avgadrnot
+ggplot(hotel, aes(x=canceledagain, fill = hotel)) + geom_bar() +scale_x_continuous(breaks = seq(0,1)) 
 ```
+
 ## What was the average number of changes made to the bookings in those bookings that were canceled? What about those that weren't, and by hotel classification?
 ```{r}
-
+avgchangecanceled<-tapply(hotel$is_canceled, hotel$booking_changes, mean, na.rm = TRUE)
+avgchangecanceled
+avgchangenot<-tapply(ifelse(hotel$is_canceled == 1, 0,1), hotel$booking_changes, mean, na.rm = TRUE)
+avgchangenot
 ```
+It doesn't seem as if the number of changes in the 
+
 ## Did the deposit type have any effect on the chance of cancelation? By hotel classification?
 ```{r}
-
+deposittypecanceled<-aggregate(hotel$is_canceled, list(DepositType=hotel$deposit_type, Hoteltype=hotel$hotel), mean)
+deposittypecanceled
 ```
+
 
 # Group Size, Length of Stay, and Type
 In this section we will be analyzing the impact of size of group, type of group, and length of stay on different variable such as adr, and number of speical requests. Since adr is directly related to the amount of revenue we will recieve, it is the key variable analyzed in this section. However, we also look at number of special requests, since it is likely that a higher number of special requests impacts the costs for the hotel, thus making a customer less profitable. 

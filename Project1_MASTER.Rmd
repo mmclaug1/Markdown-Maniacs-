@@ -259,6 +259,11 @@ summary(lm_kidsSpecReq)
 ggplot(data = hotel) + geom_bar(mapping = aes(TotalKids, main = "Bar Plot of Total Number of Kids"))
 ```
 
+```{r}
+ggplot(data=hotel) + geom_point(mapping = aes(x=TotalKids, y=adr))
+```
+```
+
 
 Here we can see very interesting results that confirm our hypothesis. First, the average number of special requests for all reservations is .57. However, groups with children or babies almost average double that number at .927 per reservation while groups without any children or babies average only .54 special requests. 
 ## Kids Impact on Special Requests and ADR
@@ -438,5 +443,3 @@ summary(hotel$required_car_parking_spaces)
 summary(hotel$total_of_special_requests)
 summary(hotel$reservation_status)
 ```
-
-

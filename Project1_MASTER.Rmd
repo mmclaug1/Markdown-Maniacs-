@@ -246,15 +246,45 @@ mean(hotel$adr[hotel$hotel == "City Hotel"]) # avg daily rate for resort hotel
 
 Not sure how deep this could go but this would more so be relevant for hotels maximizing their space. How many parking spaces should they have / could they utilize spare space another way?
 ```{r}
-summary(hotel$required_car_parking_spaces)
-ggplot(data=hotel) + geom_bar(mapping = aes(required_car_parking_spaces)) # just checking # of parking spaces alone first
+summary(hotel$required_car_parking_spaces) # Summary statistics
+
+ZeroParkingSpaces <- hotel[hotel$required_car_parking_spaces == "0",] # Filter for guests with 0 parking spaces
+nrow(ZeroParkingSpaces) # Give total number of guests with 0 parking spaces)
+
+SomeParkingSpaces <- hotel[hotel$required_car_parking_spaces > "0",] # Filter for guests with 1+ parking spaces
+nrow(SomeParkingSpaces) # Give total number of guests with 1+ parking spaces)
+
+ZeroParkingSpacesCity <- hotel[hotel$required_car_parking_spaces == "0" & hotel$hotel == "City Hotel",] # Filter for guests at city hotel requiring 1+ parking spaces
+SomeParkingSpacesCity <- hotel[hotel$required_car_parking_spaces > "0" & hotel$hotel == "City Hotel",] # Filter for guests at city hotel requiring 1+ parking spaces
+
+ZeroParkingSpacesResort <- hotel[hotel$required_car_parking_spaces == "0" & hotel$hotel == "Resort Hotel",] # Filter for guests at resort hotel requiring 1+ parking spaces
+SomeParkingSpacesResort <- hotel[hotel$required_car_parking_spaces > "0" & hotel$hotel == "Resort Hotel",] # Filter for guests at resort hotel requiring 1+ parking spaces
+
+nrow(ZeroParkingSpacesCity) # Number of guests at city hotels requiring zero parking spaces
+nrow(SomeParkingSpacesCity) # Number of guests at city hotels requiring 1+ parking spaces
+
+nrow(ZeroParkingSpacesResort) # Number of guests at resort hotels requiring zero parking spaces
+nrow(SomeParkingSpacesResort) # Number of guests at resort hotels requiring 1+ parking spaces
+
+nrow(ZeroParkingSpacesCity) / nrow(hotel) # Proportion of guests at city hotels requiring parking spaces
+nrow(ZeroParkingSpacesResort) / nrow(hotel) # Proportion of guests at resort hotels requiring parking spaces
+
+ggplot(data=hotel) + geom_bar(mapping = aes(required_car_parking_spaces, fill = hotel)) # visual of parking spaces by hotel type
 ```
 <br/> Update: I'm not overly interested in exploring the number of required parking spaces anymore. The **vast** majority of hotel guests require 0 parking spaces (which makes sense -- they're on vacation after all).
+
 
 ## Does the time of year influence the number of special requests?
 
 ```{r}
+#MonthsTable <- hotel[hotel$arrival_date_month == "OO",] # Filter for flights with airline code OO
+#nrow(code_OO) # Give total number of flights with airline code OO
 
+SpecReqByMonth <- aggregate(hotel$total_of_special_requests, list(Month=hotel$arrival_date_month), mean) # Avg SpecReq by month
+SpecReqByMonth
+round(sort(SpecReqByMonth[,2], decreasing = T),2) # Need help keeping the month labels when I sort
+
+ggplot(data = hotel) + geom_bar(mapping = aes(arrival_date_month, fill = "red"))
 ```
 
 

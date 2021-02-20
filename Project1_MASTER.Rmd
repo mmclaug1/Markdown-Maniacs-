@@ -370,6 +370,7 @@ ggplot(data = hotel) + geom_point(mapping = aes(total_of_special_requests, adr))
 
 ```{r}
 Table_ResStatus_Kids <- table(hotel$reservation_status, hotel$TotalKids)
+summary(Table_ResStatus_Kids)
 ```
 
 # Time of Year 

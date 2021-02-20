@@ -259,8 +259,8 @@ summary(lm_kidsSpecReq)
 ggplot(data = hotel) + geom_bar(mapping = aes(TotalKids, main = "Bar Plot of Total Number of Kids"))
 ```
 
-```{r}
-ggplot(data=hotel) + geom_point(mapping = aes(x=TotalKids, y=adr))
+```{r TotalKids and ADR}
+ggplot(data=hotel) + geom_point(mapping = aes(x=TotalKids, y=adr)) # This could use a better plot
 ```
 ```
 
@@ -339,8 +339,7 @@ ggplot(data=hotel) + geom_bar(mapping = aes(required_car_parking_spaces, fill = 
 ## Does the time of year influence the number of special requests?
 
 ```{r}
-#MonthsTable <- hotel[hotel$arrival_date_month == "OO",] # Filter for flights with airline code OO
-#nrow(code_OO) # Give total number of flights with airline code OO
+MonthsTable <- table(hotel$arrival_date_month, hotel$total_of_special_requests)
 
 SpecReqByMonth <- aggregate(hotel$total_of_special_requests, list(Month=hotel$arrival_date_month), mean) # Avg SpecReq by month
 SpecReqByMonth
@@ -365,7 +364,7 @@ ggplot(data = hotel) + geom_point(mapping = aes(total_of_special_requests, adr))
 ## Relationship between reservation status and demographics of guests (aduls/children/babies, country)
 
 ```{r}
-
+Table_ResStatus_Kids <- table(hotel$reservation_status, hotel$TotalKids)
 ```
 
 # Time of Year 

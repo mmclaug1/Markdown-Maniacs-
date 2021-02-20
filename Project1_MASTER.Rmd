@@ -102,13 +102,14 @@ round(nrow(cityiscanceled)/nrow(city),3)
 ```{r}
 ggplot(hotel, aes(x=is_canceled, fill = hotel)) + geom_bar() +scale_x_continuous(breaks = seq(0,1))  
 ```
+
 This graph illustrates the idea presented above in our comments on the cancellation rate. It gives us more context on how many room reservations we should be listing at either hotel classification. We see roughly 41.7% of City Hotels are canceled, compared to 27.8% in Resort Hotels, which tells us that we should be listing more bookings at City hotels to drive revenue.
 
 ## Which country of origin had the highest cancelation rate?
 ```{r}
 canceled<-hotel[hotel$is_canceled == 1,]
 countrycanceled<-aggregate(hotel$is_canceled, list(Country=hotel$country), mean)
-
+countrycanceled
 ```
 The purpose of answering this question was to get a sense of the different markets that we should be focusing on moving forward, while also learning how to target those markets strategically. 
 
@@ -116,22 +117,24 @@ The purpose of answering this question was to get a sense of the different marke
 ```{r}
 avgadris_canceled<-tapply(hotel$adr, hotel$is_canceled, mean)
 avgadris_canceled
-ggplot(hotel, aes(x=adr)) +geom_histogram(binwidth = 25) +xlim(0,350) 
 ```
-
 
 ## What was the average price paid by those in resort hotels, and those in city hotels? Did this have any effect on the cancellation rate of each of the classifications?
 ```{r}
 avgadrhotel<-tapply(hotel$adr, hotel$hotel, mean)
 avgadrhotel
 summary(avgadrhotel)
+ggplot(hotel, aes(x=adr)) +geom_histogram(binwidth = 25) +xlim(0,350)
 ```
 
+This is a histogram and statistical data detailing the distribution of price paid by our customers. Our conclusion, based on this graph, is that we should possibly increasing the price of our listings at resort hotels to smooth out the demand distribution and increase out revenue. The fact that the average price paid by our customers is higher than that of our resort hotel average means that we may be able to squeak out more revenue by raising the price of our listings at those resort hotels. 
 
 ## Which booking channel had the most cancellations, and by hotel classification?
 ```{r}
 aggregate(hotel$is_canceled, list(hotel=hotel$hotel, DistributionChannel=hotel$distribution_channel), mean)
 ```
+
+We should evaluate our partnerships with some our distribution channels. More specifically, that should be our partnerships with travel agents and tour operators. They make up the bulk of our reservations, and thus have a large impact on our revenue. If we can increase the quality of these partnerships, we may be able to bring down the cancellation numbers provided in this table. Although our corporate partners also have a relatively large cancellation rate, we recommend that we continue our relationship with them, because they make up a comparatively low volume of our sales.
 
 ## How many previous cancellations repeated, and by hotel classification?
 ```{r}
@@ -143,8 +146,9 @@ avgadragain<-tapply(hotel$adr,canceledagain, mean, na.rm = TRUE)
 avgadrnot<-tapply(hotel$adr, notcanceledagain, mean, na.rm = TRUE)
 avgadragain
 avgadrnot
-ggplot(hotel, aes(x=canceledagain, fill = hotel)) + geom_bar() +scale_x_continuous(breaks = seq(0,1)) 
 ```
+
+This data suggests that we should possibly lean into different markets strategically, as the majority of customers that previously canceled had canceled again. It also appears they pay lower prices compared to those that had not previously canceled with us before. We need to increase the loyalty to our brand, which will increase our retention rate of customers, thus leading to higher cash inflows.
 
 ## What was the average number of changes made to the bookings in those bookings that were canceled? What about those that weren't, and by hotel classification?
 ```{r}
@@ -153,7 +157,7 @@ avgchangecanceled
 avgchangenot<-tapply(ifelse(hotel$is_canceled == 1, 0,1), hotel$booking_changes, mean, na.rm = TRUE)
 avgchangenot
 ```
-It doesn't seem as if the number of changes in the 
+It doesn't seem as if the number of changes in the the booking had much effect on the cancellations, however, it would save us cost to decrease the number of changes made to bookings in those reservations that are canceled. At the moment, the bulk of canceled reservations make little changes, which is a good thing. We should continue to look into strategic business plans as a way of decreasing cost in this aspect.
 
 ## Did the deposit type have any effect on the chance of cancelation? By hotel classification?
 ```{r}
@@ -161,6 +165,7 @@ deposittypecanceled<-aggregate(hotel$is_canceled, list(DepositType=hotel$deposit
 deposittypecanceled
 ```
 
+Strangely enough, we found that non-refundable deposit types had a grossly large cancellation rate. We should consider changing our listing policy in city hotels to allow for customers not to make a deposit, and allow our resort-goers the opportunity to have a refundable deposit. Our customer segment is a huge part of this, as we believe that the data suggests recreational customers are more inclined to not cancel when they have the ability to get a refund on their deposit, whereas our more "corporate" and city customers are more inclined to not cancel when they don't have to make a deposit in the first place.
 
 # Group Size, Length of Stay, and Type
 In this section we will be analyzing the impact of size of group, type of group, and length of stay on different variable such as adr, and number of speical requests. Since adr is directly related to the amount of revenue we will recieve, it is the key variable analyzed in this section. However, we also look at number of special requests, since it is likely that a higher number of special requests impacts the costs for the hotel, thus making a customer less profitable. 

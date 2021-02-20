@@ -20,6 +20,8 @@ A number of different variables in the data seem to have relevant business takea
 
 To begin, we will do some basic descriptive analytics on a number of different variables that we think have some pretty significant business insights.
 
+test
+
 ##Data Import and Basic Sturcture Visualization
 
 ```{r}

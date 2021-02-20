@@ -345,7 +345,9 @@ ggplot(data=hotel) + geom_bar(mapping = aes(required_car_parking_spaces, fill = 
 
 ```{r}
 MonthsTable <- table(hotel$arrival_date_month, hotel$total_of_special_requests)
+```
 
+```{r}
 SpecReqByMonth <- aggregate(hotel$total_of_special_requests, list(Month=hotel$arrival_date_month), mean) # Avg SpecReq by month
 SpecReqByMonth
 round(sort(SpecReqByMonth[,2], decreasing = T),2) # Need help keeping the month labels when I sort

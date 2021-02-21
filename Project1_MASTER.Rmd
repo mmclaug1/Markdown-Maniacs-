@@ -381,7 +381,133 @@ Table_ResStatus_Kids
 ```
 Regardless of the total number of kids, the most likely reservation status is "Check-Out," meaning that guests tend to follow through with their hotel stays. Additionally, it seems that the more kids a party has, the less likely they are to cancel or not show up.
 
+# Cancellations, Deposit Type, Customer Type
+[description of section]
+
+## Overall cancellation rate
+
+```{r}
+cancelration_rate <- (sum(hotel$is_canceled))/nrow(hotel)
+round(cancelration_rate,2)
+```
+
+
+## Adr by customer type
+
+In this section we will be looking at the average daily rate for each customer type - contract, group, transient and transient-party. This is important as knowing which customer group has the highest average daily rate will allow this hotel to market to that group, bringing more revenue.
+
+```{r}
+adr_by_ctype <- tapply(hotel$adr, hotel$customer_type, mean, na.rm = T) # This function creates a table showing the average daily rates for each customer type
+
+adr_by_ctype <- data.frame(adr_by_ctype) # This function transforms the table into a data frame, allowing it to be used in a ggplot
+
+adr_by_ctype <- cbind(newColName = rownames(adr_by_ctype), adr_by_ctype) 
+rownames(adr_by_ctype) <- 1:nrow(adr_by_ctype) # These two functions give the first collumn of the dataframe a name, so it can be used in ggplot
+
+names(adr_by_ctype)[names(adr_by_ctype) == "newColName"] <- "customer"
+names(adr_by_ctype)[names(adr_by_ctype) == "adr_by_ctype"] <- "adr" # This group of functions changes the names of the collums to better reflect what they are, customer type and adr
+
+adr_by_ctype # This is the final data frame that will be graphed below
+
+ggplot(adr_by_ctype, aes(x = customer, y = adr)) + geom_bar(stat = "identity", fill = "#FF9999", color = "black") + ggtitle("Average Daily Rate by Customer Type") + theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) + labs(x = "Customer Type", y = "Average Daily Rate", title = "Average Daily Rate by Customer Type") # This bar graph shows the average daily rates for each customer type. It is a bar graph as it is easy to see the differences between them
+```
+From this data we can see that transient parties, on average, have the highest average daily rate. This means that hotels should target transient parties, which would allow them to increase revenue.
+
+## Cancelations by deposit type
+
+This section will explore the number of cancellations for each deposit type. By understanding which deposit type has the most cancellations you can attempt to limit the number of cancellations or book rooms accordingly.
+
+```{r}
+canceled_by_deposite <- table(hotel$is_canceled, hotel$deposit_type) # This function creates a table of cancellations by deposite type, 1 being canceled, 0 being not canceled
+
+canceled_by_deposite <- data.frame(canceled_by_deposite) # this function turns that table into a dataframe
+canceled_by_deposite
+
+ggplot(canceled_by_deposite, aes(x = Var1, y = Freq, fill = Var2)) + geom_bar(position = "dodge", stat = "identity", color = "black") + ggtitle("Cancelations by Deposite Type") + theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) + labs(x = "Not Canceled / Canceled", y = "Number of Observations", title = "Cancelations by Deposite Type") + guides(fill=guide_legend(title = "Deposite Type")) # This bar graph shows canceled and not canceled for the different deposite types
+
+```
+
+## Cancelations by Customer type
+
+Being able to see how many cancelations by each customer type will allow hotels to properly book - overbook based on how likely groups are to cancel - rooms and mitigate number of cancellations. 
+
+```{r}
+canceled_by_Ctype <- tapply(hotel$is_canceled, hotel$customer_type, sum, na.rm = T) # This function creates a table of cancelations by customer type
+
+canceled_by_Ctype <- data.frame(canceled_by_Ctype) # This function transforms the previous table into a dataframe
+
+canceled_by_Ctype <- cbind(newColName = rownames(canceled_by_Ctype), canceled_by_Ctype)
+rownames(canceled_by_Ctype) <- 1:nrow(canceled_by_Ctype) # This group of functions adds a collumn name allowing it to be graphed in a ggplot
+
+names(canceled_by_Ctype)[names(canceled_by_Ctype) == "newColName"] <- "Ctype"
+names(canceled_by_Ctype)[names(canceled_by_Ctype) == "canceled_by_Ctype"] <- "Can" # These two functions change the names of the columns to better describe them
+
+canceled_by_Ctype
+
+ggplot(canceled_by_Ctype, aes(x = Ctype, y = Can)) + geom_bar(stat = "identity", fill = "#FF9999", color = "black") + ggtitle("Cancelations by Customer Type") + theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) + labs(x="Customer Type", y="Number of Cancelations", title="Cancelations by Customer Type") # This bar graph shows the number of cancelations for each customer type. It is a bar graph as it is easy to compare different groups cancelations.
+```
+
+## Deposites by customer type
+
+Previously we explored how many cancelations by deposite type. Knowing which groups are most likely to use which deposit type will enable hotels to further predict cancelations. This information will further allow hotels to more accuretly predict cancellations and book hotel rooms better.
+
+```{r}
+deposite_by_Ctype <- table(hotel$deposit_type, hotel$customer_type) # This function creates a table of deposite types by customer types
+
+deposite_by_Ctype <- data.frame(deposite_by_Ctype)[,] # This function transforms that table into a dataframe, allowing it to be plotted in ggplot
+
+names(deposite_by_Ctype)[names(deposite_by_Ctype) == "Var1"] <- "deposite_type"
+names(deposite_by_Ctype)[names(deposite_by_Ctype) == "Var2"] <- "group_type"
+names(deposite_by_Ctype)[names(deposite_by_Ctype) == "Freq"] <- "count" # This group of functions changes the names of the collumns to better describe them
+
+deposite_by_Ctype
+
+ggplot(data = deposite_by_Ctype, aes(x = deposite_type, y = count, fill = group_type)) + geom_bar(position = "dodge", stat = "identity", color = "black") + ggtitle("Deposite Type by Customer Type") + theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) + labs(x="Deposite Type", y="Number of Customers", title="Deposite Type by Customer Type") + guides(fill=guide_legend(title = "Customer Type")) # A bar graph was used to better visualize the number of customers in each type by the deposite type
+```
+
+## Average daily rates by company
+
+Knowing which company has the highest average daily rates will enable higher revenue as they can attempt to increase bookings from that company.
+
+```{r}
+mean_adr_by_co <- tapply(hotel$adr, hotel$company, mean, na.rm = T) # This function creates a table showing the average daily rates by each company. 
+
+mean_adr_by_co <- data.frame(mean_adr_by_co) # This function transforms the previous table into a dataframe.
+
+mean_adr_by_co <- cbind(newColName = rownames(mean_adr_by_co), mean_adr_by_co)
+rownames(mean_adr_by_co) <- 1:nrow(mean_adr_by_co) # This group of functions adds a name to one of the columns.
+
+names(mean_adr_by_co)[names(mean_adr_by_co) == "newColName"] <- "co"
+names(mean_adr_by_co)[names(mean_adr_by_co) == "mean_adr_by_co"] <- "adr" # This group of functions changes the names of the collumns to better describe them.
+
+summary(mean_adr_by_co)
+
+ggplot(mean_adr_by_co, aes(x = co, y = adr)) + geom_point(size = 1, color = "#FF9999") + ggtitle("Average Daily Rate by Company") + theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) + labs(x="Company", y="Average Daily Rate", title="Average Daily Rate by Company") # This scatter plot shows the average daily rates for each company.
+```
+
+## Average daily rates by agents
+
+Knowing which agents has the highest average daily rates will enable higher revenue as they can attempt to increase bookings from those agents.
+
+```{r}
+mean_adr_by_agent <- tapply(hotel$adr, hotel$agent, mean, na.rm = T) # This function creates a table showing the average daily rates by each agent. 
+
+
+mean_adr_by_agent <- data.frame(mean_adr_by_agent) # This function transforms the previous table into a dataframe.
+
+mean_adr_by_agent <- cbind(newColName = rownames(mean_adr_by_agent), mean_adr_by_agent)
+rownames(mean_adr_by_agent) <- 1:nrow(mean_adr_by_agent) # This group of functions adds a name to one of the columns.
+
+names(mean_adr_by_agent)[names(mean_adr_by_agent) == "newColName"] <- "agent"
+names(mean_adr_by_agent)[names(mean_adr_by_agent) == "mean_adr_by_agent"] <- "adr" # This group of functions changes the names of the collumns to better describe them.
+
+summary(mean_adr_by_agent)
+
+ggplot(mean_adr_by_agent, aes(x = agent, y = adr)) + geom_point(size = 1, color = "#FF9999") + ggtitle("Average Daily Rate by Agent") + theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) + labs(x = "Agent ID", y = "Average Daily Rate ($)", title = "Average Daily Rate by Agent") # This scatter plot shows the average daily rates for each agent.
+```
+
 # Time of Year 
+
 ## Do Holidays impact ADR? 
 ```{r}
 mean(hotel$adr) #Find Adr on average
@@ -450,16 +576,14 @@ In conclusion, after analyzing the hotel data set we can draw the following conc
 The largest takeaways from this section are as follows. Attempt to make reservations through Online TA market segment, which yields the highest ADR on average. In addition, it is important to look to minimize special requests, as they are likely tied to higher costs. More kids in groups means more special requests, thus the hotel might want to charge a higher fee if there are many kids in a reservation. 
 
 
-6. Time of Year Section
-Here, we discovered that the ADR (for both hotels) is roughly the same for the hotel during holiday and non holiday bookings. Thus, we recomend that the hotel begin to increase rates and prices during the holiday seasons, which is typical for any hotel. 
-
-3. Jacob Section 
+3. Minimizing Costs
 
 4. Michael Section 
 
 5. Alec Section 
 
-
+6. Time of Year Section
+Here, we discovered that the ADR (for both hotels) is roughly the same for the hotel during holiday and non holiday bookings. Thus, we recomend that the hotel begin to increase rates and prices during the holiday seasons, which is typical for any hotel. 
 
 
 

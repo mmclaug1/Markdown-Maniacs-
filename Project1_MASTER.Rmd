@@ -477,9 +477,11 @@ aggregate(is_repeated_guest ~ distribution_channel, data = hotel, mean)
 ##How many guests recieved the hotel room they requested?
 
 ```{r}
-reserved_room_type <- as.factor(hotel$reserved_room_type)
+hotel$reserved_room_type <- as.factor(hotel$reserved_room_type)
 
-assigned_room_type <- as.factor(hotel$assigned_room_type)
+hotel$reserved_room_type<- factor(hotel$reserved_room_type, levels = c(levels(hotel$reserved_room_type ),"I", "K"))
+
+hotel$assigned_room_type <- as.factor(hotel$assigned_room_type)
 
 hotel$Room_Match <- ifelse(hotel$reserved_room_type == hotel$assigned_room_type, 1, 0)
 
@@ -489,7 +491,13 @@ Percent_Room_Match <- sum(hotel$Room_Match)/nrow(hotel)
 
 Percent_Room_Match
 
+levels(hotel$assigned_room_type)
+
+levels(hotel$reserved_room_type)
+
+
 ```
+
 
 ##Previous Cancellations & Previous Bookings not Canceled 
 

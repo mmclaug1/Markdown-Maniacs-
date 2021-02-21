@@ -381,6 +381,135 @@ Table_ResStatus_Kids
 ```
 Regardless of the total number of kids, the most likely reservation status is "Check-Out," meaning that guests tend to follow through with their hotel stays. Additionally, it seems that the more kids a party has, the less likely they are to cancel or not show up.
 
+# Hotel Room Reservations and Market Segment Analysis
+
+## What are the reservation requests for each room?
+
+```{r}
+hotel$reserved_room_type <- as.factor(hotel$reserved_room_type)
+
+table(hotel$reserved_room_type)
+
+#Room A is the most reserved room, followed by room D and E. 
+
+reserved_room_type <- sort(table(hotel$reserved_room_type))
+
+barplot(reserved_room_type, main = "# Room requests", xlab = "month", ylab = "# of room requests", cex.names = 0.4, col = "blue")
+
+#See above for a visual representation of room reservation requests. 
+
+data.frame(reserved_room_type)
+
+##Which hotel rooms are requested the most by market segment?
+
+library(dplyr)
+
+#count(hotel, market_segment, reserved_room_type)
+
+library(ggplot2)
+ 
+# Stacked
+
+hotel$count <- 1
+
+ggplot(hotel, aes(fill=reserved_room_type, y=count, x= market_segment)) + geom_bar(position ="fill", stat="identity")
+
+#Above is a breakdown of the room reservation requests in a ggplot graph.
+
+
+```
+
+
+##What insights can we draw from the market segment of our clients and how it relates to repeat customers?
+
+We have discovered that the majority of repeat customers are employed in the aviation, corporate or complementary market segments. 
+
+```{r}
+aggregate(is_repeated_guest ~ market_segment, data = hotel, mean)
+
+market_segment <- sort(table(hotel$market_segment))
+
+barplot(market_segment, main = "Market Segment", xlab = "Market Segment", ylab = "Frequency", cex.names = 0.4, col = "blue")
+
+#Online TA is the most popular method of booking a reservation with a hotel. 
+
+ggplot(hotel, aes(x=market_segment, y=previous_cancellations, fill=reserved_room_type)) + 
+  geom_bar(stat = "identity")
+
+```
+
+##Cancellation Breakdown
+
+37.04% of reservations are eventually canceled by the hotel's customers. 
+
+```{r}
+nrow(hotel[hotel$is_canceled == 1,]) / nrow(hotel)  
+
+#Total canceled reservations out of all entries (37.04%)
+
+num_cancelled_city <- nrow(hotel[hotel$is_canceled == 1 & hotel$hotel == "City Hotel",])
+
+print(num_cancelled_city)
+
+num_city_bookings <- nrow(hotel[hotel$hotel == "City Hotel",])
+
+print(num_city_bookings)
+
+print(num_cancelled_city/num_city_bookings)  #Proportion canceled in City Hotel (41.7%)
+```
+
+
+##Is there a connection between the market segment of our clients and their liklihood of being a repeat customer?
+
+```{r}
+hotel$market_segment <- as.factor(hotel$market_segment)
+
+hotel$distribution_channel <- as.factor(hotel$distribution_channel)
+
+aggregate(is_repeated_guest ~ market_segment, data = hotel, mean)
+
+##Corporate distribution is the largest source of repeat business for the hotel industry.
+
+aggregate(is_repeated_guest ~ distribution_channel, data = hotel, mean)
+
+
+```
+
+##How many guests recieved the hotel room they requested?
+
+```{r}
+reserved_room_type <- as.factor(hotel$reserved_room_type)
+
+assigned_room_type <- as.factor(hotel$assigned_room_type)
+
+hotel$Room_Match <- ifelse(hotel$reserved_room_type == hotel$assigned_room_type, 1, 0)
+
+Room_Match <- as.numeric(hotel$Room_Match)
+
+Percent_Room_Match <- sum(hotel$Room_Match)/nrow(hotel)
+
+Percent_Room_Match
+
+```
+
+##Previous Cancellations & Previous Bookings not Canceled 
+
+```{r}
+
+library(ggplot2)
+
+aggregate(previous_cancellations ~ market_segment, data = hotel, mean)
+
+##Corporate accounts for the highest number of bookings not canceled. 
+
+hotel$total <- "total"
+
+ggplot(hotel, aes(fill=market_segment, y=previous_cancellations, x= total)) + geom_bar(position ="fill", stat="identity")
+
+aggregate(previous_bookings_not_canceled ~ market_segment, data = hotel, sum)
+```
+
+
 # Cancellations, Deposit Type, Customer Type
 [description of section]
 

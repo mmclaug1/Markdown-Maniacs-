@@ -356,6 +356,8 @@ Regardless of the total number of kids, the most likely reservation status is "C
 
 # Hotel Room Reservations and Market Segment Analysis
 
+In this section we explore the market's demand for different room types, the preferences of different market segments, and who is responsible for previous cancellations. This information is useful to understand the room types in demand and the frequency with which a customer's requested room can be fulfilled. We also explore the source of repeat customers by market segment. 
+
 ## What are the reservation requests for each room?
 
 ```{r}
@@ -387,13 +389,15 @@ hotel$count <- 1
 
 ggplot(hotel, aes(fill=reserved_room_type, y=count, x= market_segment)) + geom_bar(position ="fill", stat="identity")
 
-#The graph above shows the mix of room bookings for every market segment. This information is useful to predict the demand for rooms by each customer market segment.
+#The graph above shows the mix of room bookings for every market segment. This information is useful to predict the demand for rooms by each customer market segment. In summary, in this section we determined the popularity of room type by market segment, which is useful in predicting future demand. 
+
+
 ```
 
 
 ##What insights can we draw from the market segment of our clients and how it relates to repeat customers?
 
-We have discovered that the majority of repeat customers are employed in the aviation, corporate or complementary market segments. 
+We have discovered that the majority of repeat customers are employed in the aviation, corporate or complementary market segments. This makes sense as these individuals would frequently travel for business purposes.  
 
 ```{r}
 aggregate(is_repeated_guest ~ market_segment, data = hotel, mean)
@@ -410,7 +414,7 @@ ggplot(hotel, aes(x=market_segment, y=previous_cancellations, fill=reserved_room
 
 ##Cancellation Breakdown
 
-37.04% of reservations are eventually canceled by the hotel's customers. 
+37.04% of reservations are eventually canceled by the hotel's customers. This information can be used to understand available room capacity, especially when a hotel is sold out. 
 
 ```{r}
 nrow(hotel[hotel$is_canceled == 1,]) / nrow(hotel)  
@@ -431,6 +435,8 @@ print(num_cancelled_city/num_city_bookings)  #Proportion canceled in City Hotel 
 
 ##Is there a connection between the market segment of our clients and their liklihood of being a repeat customer?
 
+In this section we can see that the aviation, complementary, corporate market segments attract the most repeat customers. 
+
 ```{r}
 hotel$market_segment <- as.factor(hotel$market_segment)
 
@@ -444,6 +450,8 @@ aggregate(is_repeated_guest ~ distribution_channel, data = hotel, mean)
 ```
 
 ##How many guests recieved the hotel room they requested?
+
+The hotel was able to accomodate 87.5% of room requests made by customers. 
 
 ```{r}
 hotel$reserved_room_type <- as.factor(hotel$reserved_room_type)
@@ -467,6 +475,8 @@ levels(hotel$reserved_room_type)
 
 ##Previous Cancellations & Previous Bookings not Canceled 
 
+Complementary, Groups and corporate are the most likely to cancel a reservation. 
+
 ```{r}
 
 library(ggplot2)
@@ -485,6 +495,9 @@ ggplot(hotel, aes(fill=market_segment, y=previous_cancellations, x= total)) + ge
 
 aggregate(previous_bookings_not_canceled ~ market_segment, data = hotel, sum)
 ```
+
+To conclude in this section we explored the habits of customers in different market segments, and how it relates to room requests, repeat business and cancellations. After determining the trends of each market segment, we explored how many room requests were fulfilled, and the cancellation rate of different customers. This information will help the hotel predict future demand, forecast capacity when booked out, and help match room to customer requests. 
+
 
 # Cancellations, Deposit Type, Customer Type
 In this section we will be looking at how deposit type and customer type impacts cancellations. This will help hotels book rooms to maximize revenue by properly booking hotel rooms. We will look at the adr for each customer type first to see which groups are most profitable. Next we look at the cancelations by deposit type and customer type, to show which groups have the most cancellations. Lastly we will look at deposit type by customer to type to show how many customers from each group use each deposit type.

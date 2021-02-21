@@ -390,7 +390,7 @@ hotel$reserved_room_type <- as.factor(hotel$reserved_room_type)
 
 table(hotel$reserved_room_type)
 
-#Room A is the most reserved room, followed by room D and E. 
+#This table and barplot shows how room A is the most reserved room, followed by room D and E. 
 
 reserved_room_type <- sort(table(hotel$reserved_room_type))
 
@@ -414,8 +414,7 @@ hotel$count <- 1
 
 ggplot(hotel, aes(fill=reserved_room_type, y=count, x= market_segment)) + geom_bar(position ="fill", stat="identity")
 
-#Above is a breakdown of the room reservation requests in a ggplot graph.
-
+#The graph above shows the mix of room bookings for every market segment. This information is useful to predict the demand for rooms by each customer market segment.
 
 ```
 
@@ -505,6 +504,10 @@ aggregate(previous_cancellations ~ market_segment, data = hotel, mean)
 hotel$total <- "total"
 
 ggplot(hotel, aes(fill=market_segment, y=previous_cancellations, x= total)) + geom_bar(position ="fill", stat="identity")
+
+##The graph above shows the breakdown of previous cancellations by market segment. The hotel can use this data to estimate the number of rooms that will be cancelled according to market segment hotel booking data. 
+
+#The table below shows the total number of previous cancellations by market segment. 
 
 aggregate(previous_bookings_not_canceled ~ market_segment, data = hotel, sum)
 ```

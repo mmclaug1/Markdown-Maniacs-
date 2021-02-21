@@ -15,12 +15,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-# Introduction 
-A number of different variables in the data seem to have relevant business takeaways. In this section, we will analyze these relationships and provide visualizations of the relationships between the variables.
-
-To begin, we will do some basic descriptive analytics on a number of different variables that we think have some pretty significant business insights.
-
 ## Data Import and Basic Sturcture Visualization
 
 ```{r}
@@ -52,6 +46,24 @@ hotel$customer_type<-as.factor(hotel$customer_type)
 hotel$reservation_status<-as.factor(hotel$reservation_status)
 hotel$reservation_status_date<-as.factor(hotel$reservation_status_date)
 ```
+
+# Introduction 
+A number of different variables in the data seem to have relevant business takeaways. In this section, we will analyze these relationships and provide visualizations of the relationships between the variables.
+
+To begin, we will do some basic descriptive analytics on a number of different variables that we think have some pretty significant business insights.
+
+```{r}
+summary(hotel$adr)
+summary(hotel$required_car_parking_spaces)
+summary(hotel$total_of_special_requests)
+summary(hotel$reservation_status)
+```
+
+*adr*: average daily rate as defined by dividing the sum of all lodging transactions by the total number of staying nights
+*required_car_parking_spaces*: number of car parking spaces required by the customer
+*total_of_special_requests*: number of special requests made by the customer (e.g. twin bed or high floor)
+*reservation_status*: reservation last status, assuming one of three categories: Canceled – booking was canceled by the customer; Check-Out – customer has checked in but already departed; No-Show – customer did not check-in and did inform the hotel of the reason why
+*reservation_status_date*: date at which the last status was set. This variable can be used in conjunction with the ReservationStatus to understand when was the booking canceled or when did the customer checked-out of the hotel
 
 ## Basic Data Visualization
 ```{r}
@@ -189,7 +201,7 @@ staydurationadr<-aggregate(adr ~ totalnights, data=hotel, mean, na.rm=TRUE)
 staydurationadr
 
 ```
-
+Here we can see that add total nights increase, so does ADR, at least minimally, and up to about 6 nights. 
 ## Group Size
 Here, we are looking to find data related to group size. Since the current data has people grouped into three different columns (adults, children and babies) we will first create a variable to look at the total number of people per group. From this, we will look to compare group size to other vairables. 
 ```{r}
@@ -263,14 +275,10 @@ summary(lm_kidsSpecReq)
 #ggplot(data = hotel) + geom_point(mapping = aes(TotalKids, total_of_special_requests))
 ggplot(data = hotel) + geom_bar(mapping = aes(TotalKids, main = "Bar Plot of Total Number of Kids"))
 ```
-
-```{r TotalKids and ADR}
-ggplot(data=hotel) + geom_point(mapping = aes(x=TotalKids, y=adr)) # This could use a better plot
-```
 ```
 
+Here we can see very interesting results that confirm our hypothesis. First, the average number of special requests for all reservations is .57. However, groups with children or babies almost average double that number at .927 per reservation while groups without any children or babies average only .54 special requests.  We can also see from the linear model that there is in fact correlation between the number of special requests and the amount of total kids in a reservation. 
 
-Here we can see very interesting results that confirm our hypothesis. First, the average number of special requests for all reservations is .57. However, groups with children or babies almost average double that number at .927 per reservation while groups without any children or babies average only .54 special requests. 
 ## Kids Impact on Special Requests and ADR
 ```{r}
 groupswithkids <- hotel[hotel$adults>=2 & hotel$babies> 0 | hotel$children> 0, ]
@@ -282,16 +290,6 @@ mean(groupswithadults$adr)
 mean(groupswithkids$adr, na.rm=TRUE) 
 ```
 In addition, we wanted to check if groups with kids are spending more money on average (to potentially cancelout the cost of more special requests). However, from these results we can see that the adr of groups with children and babies and the adr of groups with just adults is roughly the same. This means that groups with kids are much more costly to the hotel without driving additional revenue. 
-
-## Extra to Fuck around with if neccesary 
-```{r}
-
-ggplot(hotel, 
-       aes(x = arrival_date_month, 
-           y =mean(adr))) +
-  geom_bar(stat = "identity")
-
-```
 
 # Jacob Code -Not sure about header
 
@@ -436,17 +434,24 @@ From the above information we can also see that the problem is not hotel specifc
 
 # Summary
 
-*adr*: average daily rate as defined by dividing the sum of all lodging transactions by the total number of staying nights
-*required_car_parking_spaces*: number of car parking spaces required by the customer
-*total_of_special_requests*: number of special requests made by the customer (e.g. twin bed or high floor)
-*reservation_status*: reservation last status, assuming one of three categories: Canceled – booking was canceled by the customer; Check-Out – customer has checked in but already departed; No-Show – customer did not check-in and did inform the hotel of the reason why
-*reservation_status_date*: date at which the last status was set. This variable can be used in conjunction with the ReservationStatus to understand when was the booking canceled or when did the customer checked-out of the hotel
+In conclusion, after analyzing the hotel data set we can draw the following conclusions and have the following recommendations. 
+
+1: Cancelation Section
+
+2: Group Size, Type and Length of Stay Section 
+The largest takeaways from this section are as follows. Attempt to make reservations through Online TA market segment, which yields the highest ADR on average. In addition, it is important to look to minimize special requests, as they are likely tied to higher costs. More kids in groups means more special requests, thus the hotel might want to charge a higher fee if there are many kids in a reservation. 
+
+
+6. Time of Year Section
+Here, we discovered that the ADR (for both hotels) is roughly the same for the hotel during holiday and non holiday bookings. Thus, we recomend that the hotel begin to increase rates and prices during the holiday seasons, which is typical for any hotel. 
+
+3. Jacob Section 
+
+4. Michael Section 
+
+5. Alec Section 
 
 
 
-```{r}
-summary(hotel$adr)
-summary(hotel$required_car_parking_spaces)
-summary(hotel$total_of_special_requests)
-summary(hotel$reservation_status)
-```
+
+

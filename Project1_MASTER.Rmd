@@ -275,7 +275,6 @@ summary(lm_kidsSpecReq)
 #ggplot(data = hotel) + geom_point(mapping = aes(TotalKids, total_of_special_requests))
 ggplot(data = hotel) + geom_bar(mapping = aes(TotalKids, main = "Bar Plot of Total Number of Kids"))
 ```
-```
 
 Here we can see very interesting results that confirm our hypothesis. First, the average number of special requests for all reservations is .57. However, groups with children or babies almost average double that number at .927 per reservation while groups without any children or babies average only .54 special requests.  We can also see from the linear model that there is in fact correlation between the number of special requests and the amount of total kids in a reservation. 
 
@@ -287,37 +286,43 @@ groupswithadults <- hotel[hotel$adults>=3,]
 
 mean(groupswithadults$adr)
 
-mean(groupswithkids$adr, na.rm=TRUE) 
+mean(groupswithkids$adr, na.rm=TRUE)
 ```
 In addition, we wanted to check if groups with kids are spending more money on average (to potentially cancelout the cost of more special requests). However, from these results we can see that the adr of groups with children and babies and the adr of groups with just adults is roughly the same. This means that groups with kids are much more costly to the hotel without driving additional revenue. 
 
-# Jacob Code -Not sure about header
+# Minimizing Costs
+One of the most damaging things to a hotel's profit is special request accommodation. This section will address the variables that impact the total number of special requests, including time of year and number of children. Additionally, the section takes a look at the number of guests requiring parking spaces, in order to draw insights that could help hotels allocate their space most effectively.
 
 ## Average Price Per Person 
+
+***What is this code chunk intended to do?
 ```{r}
-priceperperson<-hotel$adr*groupsize
-
-
+priceperperson <- hotel$adr*groupsize
 ```
+
+## Histogram of Special Requests
+```{r}
+ggplot(data = hotel) + geom_histogram(mapping = aes(total_of_special_requests), fill = "purple")
+table(hotel$total_of_special_requests)
+#nrow(hotel$total_of_special_requests[hotel$total_of_special_requests == "0"])
+#nrow(hotel[hotel$total_of_special_requests == 0])
+```
+While the majority of hotel guests have 0 special requests, there is still a significant of guests with at least 1 special request. Considering the potential costs that special requests can impose, it is important to dive deeper into what causes them.
 
 ## Avg Daily Rate by Type of Hotel
 ```{r}
 mean(hotel$adr[hotel$hotel == "Resort Hotel"]) # avg daily rate for resort hotel
-mean(hotel$adr[hotel$hotel == "City Hotel"]) # avg daily rate for resort hotel
+mean(hotel$adr[hotel$hotel == "City Hotel"]) # avg daily rate for city hotel
 ```
+On average, the average daily rate at city hotels is greater than the average daily rate at resort hotels.
 
-
-## Does the type of hotel influence number of car parking spaces?
-
-Not sure how deep this could go but this would more so be relevant for hotels maximizing their space. How many parking spaces should they have / could they utilize spare space another way?
+## Required Parking Spaces by Hotel Type
 ```{r}
-summary(hotel$required_car_parking_spaces) # Summary statistics
-
 ZeroParkingSpaces <- hotel[hotel$required_car_parking_spaces == "0",] # Filter for guests with 0 parking spaces
-nrow(ZeroParkingSpaces) # Give total number of guests with 0 parking spaces)
+nrow(ZeroParkingSpaces) # Print total number of guests with 0 parking spaces)
 
 SomeParkingSpaces <- hotel[hotel$required_car_parking_spaces > "0",] # Filter for guests with 1+ parking spaces
-nrow(SomeParkingSpaces) # Give total number of guests with 1+ parking spaces)
+nrow(SomeParkingSpaces) # Print total number of guests with 1+ parking spaces)
 
 ZeroParkingSpacesCity <- hotel[hotel$required_car_parking_spaces == "0" & hotel$hotel == "City Hotel",] # Filter for guests at city hotel requiring 1+ parking spaces
 SomeParkingSpacesCity <- hotel[hotel$required_car_parking_spaces > "0" & hotel$hotel == "City Hotel",] # Filter for guests at city hotel requiring 1+ parking spaces
@@ -331,19 +336,24 @@ nrow(SomeParkingSpacesCity) # Number of guests at city hotels requiring 1+ parki
 nrow(ZeroParkingSpacesResort) # Number of guests at resort hotels requiring zero parking spaces
 nrow(SomeParkingSpacesResort) # Number of guests at resort hotels requiring 1+ parking spaces
 
-nrow(ZeroParkingSpacesCity) / nrow(hotel) # Proportion of guests at city hotels requiring parking spaces
-nrow(ZeroParkingSpacesResort) / nrow(hotel) # Proportion of guests at resort hotels requiring parking spaces
+nrow(ZeroParkingSpacesCity) / nrow(hotel) # Proportion of guests at city hotels that do not require parking spaces
+nrow(ZeroParkingSpacesResort) / nrow(hotel) # Proportion of guests at resort hotels that do not require parking spaces
 
 ggplot(data=hotel) + geom_bar(mapping = aes(required_car_parking_spaces, fill = hotel)) # visual of parking spaces by hotel type
 ```
-<br/> Update: I'm not overly interested in exploring the number of required parking spaces anymore. The **vast** majority of hotel guests require 0 parking spaces (which makes sense -- they're on vacation after all).
+Interestingly, approximately 64% of guests at city hotels do not require parking spaces, while only approximately 29% of guests at resort hotels do not require parking spaces. In other words, guests at resort hotels at much more likely to need a parking space than at city hotels. This can help hotels in terms of allocating space; resort hotels need to designate more of their space for parking, while city hotels can afford to use some of their space for other purposes.
 
 
 ## Does the time of year influence the number of special requests?
 
 ```{r}
 MonthsTable <- table(hotel$arrival_date_month, hotel$total_of_special_requests)
+MonthsTable
+#How to order months
+#How to pull insights
 ```
+
+
 
 ```{r}
 SpecReqByMonth <- aggregate(hotel$total_of_special_requests, list(Month=hotel$arrival_date_month), mean) # Avg SpecReq by month
@@ -360,17 +370,13 @@ ggplot(data = hotel) + geom_bar(mapping = aes(arrival_date_month, fill = "red"))
 lm_SpecReq_ADR <- lm(adr ~ total_of_special_requests, data=hotel) # create linear model b/w special requests and adr
 summary(lm_SpecReq_ADR)
 ```
-
-```{r}
-ggplot(data = hotel) + geom_point(mapping = aes(total_of_special_requests, adr))
-```
-
+This linear model tests the predictive power of total number of special requests on average daily rate. Since the p-value of the model is so low, we can claim that number of special requests is a significant predictor of average daily rate. On average, for every additional special request made, the average daily rate of that guest increases by about $11.
 
 ## Relationship between reservation status and demographics of guests (aduls/children/babies, country)
 
 ```{r}
 Table_ResStatus_Kids <- table(hotel$reservation_status, hotel$TotalKids)
-summary(Table_ResStatus_Kids)
+Table_ResStatus_Kids
 ```
 
 # Time of Year 

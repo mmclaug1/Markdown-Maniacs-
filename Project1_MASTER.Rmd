@@ -362,7 +362,7 @@ round(sort(SpecReqByMonth[,2], decreasing = T),2) # Need help keeping the month 
 
 ggplot(data = hotel) + geom_bar(mapping = aes(arrival_date_month, fill = "red"))
 ```
-
+On average, a guest is more likely to ask for a special request(s) in the summer months (July and August). On the contrary, they are less likely to ask for a special request(s) in the colder months (January, February, March, September, and October)
 
 ## Is there a linear relationship between avg daily rate and special requests
 
@@ -377,7 +377,9 @@ This linear model tests the predictive power of total number of special requests
 ```{r}
 Table_ResStatus_Kids <- table(hotel$reservation_status, hotel$TotalKids)
 Table_ResStatus_Kids
+# calculate proportions
 ```
+Regardless of the total number of kids, the most likely reservation status is "Check-Out," meaning that guests tend to follow through with their hotel stays. Additionally, it seems that the more kids a party has, the less likely they are to cancel or not show up.
 
 # Time of Year 
 ## Do Holidays impact ADR? 

@@ -59,18 +59,11 @@ summary(hotel$total_of_special_requests)
 summary(hotel$reservation_status)
 ```
 
-*adr*: average daily rate as defined by dividing the sum of all lodging transactions by the total number of staying nights
-*required_car_parking_spaces*: number of car parking spaces required by the customer
-*total_of_special_requests*: number of special requests made by the customer (e.g. twin bed or high floor)
-*reservation_status*: reservation last status, assuming one of three categories: Canceled – booking was canceled by the customer; Check-Out – customer has checked in but already departed; No-Show – customer did not check-in and did inform the hotel of the reason why
-*reservation_status_date*: date at which the last status was set. This variable can be used in conjunction with the ReservationStatus to understand when was the booking canceled or when did the customer checked-out of the hotel
-
 ## Basic Data Visualization
 ```{r}
 summary(hotel)
 str(hotel)
 ```
-
 Here, we cleaned the data to turn a number of different variables in the data set into factors to make the data easier to work with. 
 
 # Cancelation 
@@ -85,6 +78,7 @@ round(prop.table(tableis_canceled),3)
 What we see here is that roughly 63% of all of the reservations weren't canceled and the other 37% were. What does that mean for us? Well, it gives us context on how many bookings we can list to the public to maximize our revenue with the expectation that people will cancel their reservations. This will allow us to work at optimal capacity and improve efficiency.
 
 ## How many of each hotel classification (Resort and City) is being canceled, and at what proportion?
+
 ### Number of Resort Hotels Canceled
 ```{r}
 resort<-hotel[hotel$hotel == "Resort Hotel",]
@@ -114,7 +108,6 @@ round(nrow(cityiscanceled)/nrow(city),3)
 ```{r}
 ggplot(hotel, aes(x=is_canceled, fill = hotel)) + geom_bar() +scale_x_continuous(breaks = seq(0,1))  
 ```
-
 This graph illustrates the idea presented above in our comments on the cancellation rate. It gives us more context on how many room reservations we should be listing at either hotel classification. We see roughly 41.7% of City Hotels are canceled, compared to 27.8% in Resort Hotels, which tells us that we should be listing more bookings at City hotels to drive revenue.
 
 ## Which country of origin had the highest cancelation rate?
@@ -122,7 +115,6 @@ This graph illustrates the idea presented above in our comments on the cancellat
 canceled<-hotel[hotel$is_canceled == 1,]
 countrycanceled<-aggregate(hotel$is_canceled, list(Country=hotel$country), mean)
 countrycanceled[order(countrycanceled$x, decreasing=TRUE),]
-countrycanceled
 ```
 The purpose of answering this question was to get a sense of the different markets that we should be focusing on moving forward, while also learning how to target those markets strategically. 
 
@@ -139,14 +131,12 @@ avgadrhotel
 summary(avgadrhotel)
 ggplot(hotel, aes(x=adr)) +geom_histogram(binwidth = 25) +xlim(0,350)
 ```
-
 This is a histogram and statistical data detailing the distribution of price paid by our customers. Our conclusion, based on this graph, is that we should possibly increasing the price of our listings at resort hotels to smooth out the demand distribution and increase out revenue. The fact that the average price paid by our customers is higher than that of our resort hotel average means that we may be able to squeak out more revenue by raising the price of our listings at those resort hotels. 
 
 ## Which booking channel had the most cancellations, and by hotel classification?
 ```{r}
 aggregate(hotel$is_canceled, list(hotel=hotel$hotel, DistributionChannel=hotel$distribution_channel), mean)
 ```
-
 We should evaluate our partnerships with some our distribution channels. More specifically, that should be our partnerships with travel agents and tour operators. They make up the bulk of our reservations, and thus have a large impact on our revenue. If we can increase the quality of these partnerships, we may be able to bring down the cancellation numbers provided in this table. Although our corporate partners also have a relatively large cancellation rate, we recommend that we continue our relationship with them, because they make up a comparatively low volume of our sales.
 
 ## How many previous cancellations repeated, and by hotel classification?
@@ -160,7 +150,6 @@ avgadrnot<-tapply(hotel$adr, notcanceledagain, mean, na.rm = TRUE)
 avgadragain
 avgadrnot
 ```
-
 This data suggests that we should possibly lean into different markets strategically, as the majority of customers that previously canceled had canceled again. It also appears they pay lower prices compared to those that had not previously canceled with us before. We need to increase the loyalty to our brand, which will increase our retention rate of customers, thus leading to higher cash inflows.
 
 ## What was the average number of changes made to the bookings in those bookings that were canceled? What about those that weren't, and by hotel classification?
@@ -177,7 +166,6 @@ It doesn't seem as if the number of changes in the the booking had much effect o
 deposittypecanceled<-aggregate(hotel$is_canceled, list(DepositType=hotel$deposit_type, Hoteltype=hotel$hotel), mean)
 deposittypecanceled
 ```
-
 Strangely enough, we found that non-refundable deposit types had a grossly large cancellation rate. We should consider changing our listing policy in city hotels to allow for customers not to make a deposit, and allow our resort-goers the opportunity to have a refundable deposit. Our customer segment is a huge part of this, as we believe that the data suggests recreational customers are more inclined to not cancel when they have the ability to get a refund on their deposit, whereas our more "corporate" and city customers are more inclined to not cancel when they don't have to make a deposit in the first place.
 
 # Group Size, Length of Stay, and Type
@@ -195,6 +183,7 @@ round(mean(hotel$stays_in_week_nights)+mean(hotel$stays_in_weekend_nights),2)
 median(hotel$stays_in_week_nights+hotel$stays_in_weekend_nights)
 ```
 Here we can see the average number of nights stayed by hotel guests. First, we combine stays in weeknights with stays during the weekend to obtain total nights per visit. The plot shows that a majority of guests are staying between 1 to 5 days, with the average being 3.43 nights, and the median being 3 nights. This is substantially higher than the national average stay of about 1.8 days (Business Travel News)
+
 ## Stay Duration vs. ADR
 ```{r}
 staydurationadr<-aggregate(adr ~ totalnights, data=hotel, mean, na.rm=TRUE)
@@ -203,6 +192,7 @@ staydurationadr
 
 ```
 Here we can see that add total nights increase, so does ADR, at least minimally, and up to about 6 nights. 
+
 ## Group Size
 Here, we are looking to find data related to group size. Since the current data has people grouped into three different columns (adults, children and babies) we will first create a variable to look at the total number of people per group. From this, we will look to compare group size to other vairables. 
 ```{r}
@@ -232,28 +222,22 @@ groupsizeadr
 More importantly than just group size, we analyzed the impact of group size on ADR. Here we can see adr increase with group size up to 5 people. Although we don't have data on number of rooms reserved (if more than one) We can see that once the group size is greater than two, revenue per night increases substantially. If in the same number of rooms, the costs also likely do not increase much with added people. 
 
 ## Market Segment Group Type vs. ADR
-Here were looking at groups by market segment. 
-```{r}
-library(ggplot2)
+Here, we are looking at groups by market segment. 
 
+```{r}
 ggplot(hotel, aes(x=groupsize, fill=market_segment, main= "Number of Reservations by Group size and Market Segment")) + geom_bar(position = "stack")
 
 marketsegmentadr<-aggregate(adr ~ market_segment, data=hotel, mean, na.rm=TRUE)
 
-
 plot(hotel$market_segment, main="Number of Reservations by Market Segment", las=2, col="purple")
 
-
-
 marketsegmentadr
-
 ```
 From the above graphs and information, we can see that group size doesn't have a noticiable impact on the market segment that books a reservation. More interestingly though, is looking at the data regarding which market segments book most frequently, and the average ADR of those segments. Online TA and Offline TA TO are the most frequently used booking methods, however, Online is more than $30 higher per day in ADR than offline booking (see table). This might suggest that the Hotel should shift towards exclusively online booking, as it is possible the room disocount are higher for offline booking. 
 
 ## Kids Impact on Special Requests 
 Here, we will look to see if number of children + babies is related to the number of special requests, as we suspect that a higher number of special requests will lead to larger costs for the hotel.  
 ```{r}
-
 mean(hotel$total_of_special_requests, na.rm=TRUE)
 
 groupswithoutkids<-hotel[hotel$babies ==0 & hotel$children ==0,] #Groups with no kids
@@ -262,10 +246,6 @@ groupswithkids <- hotel[hotel$babies> 0 | hotel$children> 0,] #Groups with at le
 mean(groupswithkids$total_of_special_requests, na.rm=TRUE)
 
 mean(groupswithoutkids$total_of_special_requests, na.rm = TRUE)
-
-
-
-
 ```
 
 ```{r}
@@ -273,7 +253,6 @@ hotel$TotalKids <- hotel$babies + hotel$children
 lm_kidsSpecReq <- lm(total_of_special_requests ~ TotalKids, data = hotel)
 summary(lm_kidsSpecReq)
 
-#ggplot(data = hotel) + geom_point(mapping = aes(TotalKids, total_of_special_requests))
 ggplot(data = hotel) + geom_bar(mapping = aes(TotalKids, main = "Bar Plot of Total Number of Kids"))
 ```
 
@@ -294,19 +273,10 @@ In addition, we wanted to check if groups with kids are spending more money on a
 # Minimizing Costs
 One of the most damaging things to a hotel's profit is special request accommodation. This section will address the variables that impact the total number of special requests, including time of year and number of children. Additionally, the section takes a look at the number of guests requiring parking spaces, in order to draw insights that could help hotels allocate their space most effectively.
 
-## Average Price Per Person 
-
-***What is this code chunk intended to do?
-```{r}
-priceperperson <- hotel$adr*groupsize
-```
-
 ## Histogram of Special Requests
 ```{r}
 ggplot(data = hotel) + geom_histogram(mapping = aes(total_of_special_requests), fill = "purple")
 table(hotel$total_of_special_requests)
-#nrow(hotel$total_of_special_requests[hotel$total_of_special_requests == "0"])
-#nrow(hotel[hotel$total_of_special_requests == 0])
 ```
 While the majority of hotel guests have 0 special requests, there is still a significant of guests with at least 1 special request. Considering the potential costs that special requests can impose, it is important to dive deeper into what causes them.
 
@@ -342,8 +312,8 @@ nrow(ZeroParkingSpacesResort) / nrow(hotel) # Proportion of guests at resort hot
 
 ggplot(data=hotel) + geom_bar(mapping = aes(required_car_parking_spaces, fill = hotel)) # visual of parking spaces by hotel type
 ```
-Interestingly, approximately 64% of guests at city hotels do not require parking spaces, while only approximately 29% of guests at resort hotels do not require parking spaces. In other words, guests at resort hotels at much more likely to need a parking space than at city hotels. This can help hotels in terms of allocating space; resort hotels need to designate more of their space for parking, while city hotels can afford to use some of their space for other purposes.
-
+<br/> Interestingly, approximately 64% of guests at city hotels do not require parking spaces, while only approximately 29% of guests at resort hotels do not require parking spaces. In other words, guests at resort hotels at much more likely to need a parking space than at city hotels. This can help hotels in terms of allocating space; resort hotels need to designate more of their space for parking, while city hotels can afford to use some of their space for other purposes.
+On average, a guest is more likely to ask for a special request(s) in the summer months (July and August). On the contrary, they are less likely to ask for a special request(s) in the colder months (January, February, March, September, and October)
 
 ## Does the time of year influence the number of special requests?
 
@@ -364,7 +334,7 @@ SpecReqByMonth[order(SpecReqByMonth$x, decreasing=TRUE),]
 
 ggplot(data = hotel) + geom_bar(mapping = aes(arrival_date_month, fill = "red"))
 ```
-On average, a guest is more likely to ask for a special request(s) in the summer months (July and August). On the contrary, they are less likely to ask for a special request(s) in the colder months (January, February, March, September, and October)
+<br/> On average, a guest is more likely to ask for a special request(s) in the summer months (July and August). On the contrary, they are less likely to ask for a special request(s) in the colder months (January, February, March, September, and October)
 
 ## Is there a linear relationship between avg daily rate and special requests
 
@@ -379,7 +349,8 @@ This linear model tests the predictive power of total number of special requests
 ```{r}
 Table_ResStatus_Kids <- table(hotel$reservation_status, hotel$TotalKids)
 Table_ResStatus_Kids
-# calculate proportions
+rowSums(Table_ResStatus_Kids)
+colSums(Table_ResStatus_Kids)
 ```
 Regardless of the total number of kids, the most likely reservation status is "Check-Out," meaning that guests tend to follow through with their hotel stays. Additionally, it seems that the more kids a party has, the less likely they are to cancel or not show up.
 
@@ -417,7 +388,6 @@ hotel$count <- 1
 ggplot(hotel, aes(fill=reserved_room_type, y=count, x= market_segment)) + geom_bar(position ="fill", stat="identity")
 
 #The graph above shows the mix of room bookings for every market segment. This information is useful to predict the demand for rooms by each customer market segment.
-
 ```
 
 
@@ -436,7 +406,6 @@ barplot(market_segment, main = "Market Segment", xlab = "Market Segment", ylab =
 
 ggplot(hotel, aes(x=market_segment, y=previous_cancellations, fill=reserved_room_type)) + 
   geom_bar(stat = "identity")
-
 ```
 
 ##Cancellation Breakdown
@@ -472,8 +441,6 @@ aggregate(is_repeated_guest ~ market_segment, data = hotel, mean)
 ##Corporate distribution is the largest source of repeat business for the hotel industry.
 
 aggregate(is_repeated_guest ~ distribution_channel, data = hotel, mean)
-
-
 ```
 
 ##How many guests recieved the hotel room they requested?
@@ -496,10 +463,7 @@ Percent_Room_Match
 levels(hotel$assigned_room_type)
 
 levels(hotel$reserved_room_type)
-
-
 ```
-
 
 ##Previous Cancellations & Previous Bookings not Canceled 
 
@@ -522,9 +486,8 @@ ggplot(hotel, aes(fill=market_segment, y=previous_cancellations, x= total)) + ge
 aggregate(previous_bookings_not_canceled ~ market_segment, data = hotel, sum)
 ```
 
-
 # Cancellations, Deposit Type, Customer Type
-[description of section]
+In this section we will be looking at how deposit type and customer type impacts cancellations. This will help hotels book rooms to maximize revenue by properly booking hotel rooms. We will look at the adr for each customer type first to see which groups are most profitable. Next we look at the cancelations by deposit type and customer type, to show which groups have the most cancellations. Lastly we will look at deposit type by customer to type to show how many customers from each group use each deposit type.
 
 ## Overall cancellation rate
 
@@ -555,21 +518,7 @@ ggplot(adr_by_ctype, aes(x = customer, y = adr)) + geom_bar(stat = "identity", f
 ```
 From this data we can see that transient parties, on average, have the highest average daily rate. This means that hotels should target transient parties, which would allow them to increase revenue.
 
-## Cancelations by deposit type
-
-This section will explore the number of cancellations for each deposit type. By understanding which deposit type has the most cancellations you can attempt to limit the number of cancellations or book rooms accordingly.
-
-```{r}
-canceled_by_deposite <- table(hotel$is_canceled, hotel$deposit_type) # This function creates a table of cancellations by deposite type, 1 being canceled, 0 being not canceled
-
-canceled_by_deposite <- data.frame(canceled_by_deposite) # this function turns that table into a dataframe
-canceled_by_deposite
-
-ggplot(canceled_by_deposite, aes(x = Var1, y = Freq, fill = Var2)) + geom_bar(position = "dodge", stat = "identity", color = "black") + ggtitle("Cancelations by Deposite Type") + theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) + labs(x = "Not Canceled / Canceled", y = "Number of Observations", title = "Cancelations by Deposite Type") + guides(fill=guide_legend(title = "Deposite Type")) # This bar graph shows canceled and not canceled for the different deposite types
-
-```
-
-## Cancelations by Customer type
+## Cancelations by Customer Type
 
 Being able to see how many cancelations by each customer type will allow hotels to properly book - overbook based on how likely groups are to cancel - rooms and mitigate number of cancellations. 
 
@@ -588,8 +537,9 @@ canceled_by_Ctype
 
 ggplot(canceled_by_Ctype, aes(x = Ctype, y = Can)) + geom_bar(stat = "identity", fill = "#FF9999", color = "black") + ggtitle("Cancelations by Customer Type") + theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) + labs(x="Customer Type", y="Number of Cancelations", title="Cancelations by Customer Type") # This bar graph shows the number of cancelations for each customer type. It is a bar graph as it is easy to compare different groups cancelations.
 ```
+<br/> Cancelations by customer type: From this data we can see that the transient group have the most cancellations compared to the other groups, which almost did not cancel. This information tells hotels that they should overbook transient groups as they have more cancellations.
 
-## Deposites by customer type
+## Deposits by Customer Type
 
 Previously we explored how many cancelations by deposite type. Knowing which groups are most likely to use which deposit type will enable hotels to further predict cancelations. This information will further allow hotels to more accuretly predict cancellations and book hotel rooms better.
 
@@ -606,8 +556,9 @@ deposite_by_Ctype
 
 ggplot(data = deposite_by_Ctype, aes(x = deposite_type, y = count, fill = group_type)) + geom_bar(position = "dodge", stat = "identity", color = "black") + ggtitle("Deposite Type by Customer Type") + theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) + labs(x="Deposite Type", y="Number of Customers", title="Deposite Type by Customer Type") + guides(fill=guide_legend(title = "Customer Type")) # A bar graph was used to better visualize the number of customers in each type by the deposite type
 ```
+<br/> This data shows that the transient group has the most customers and are most likely to not have a deposit. Additionally, this further shows that most groups do not use a deposit and almost none have a refundable deposit.
 
-## Average daily rates by company
+## Average Daily Rates by Company
 
 Knowing which company has the highest average daily rates will enable higher revenue as they can attempt to increase bookings from that company.
 
@@ -627,13 +578,12 @@ summary(mean_adr_by_co)
 ggplot(mean_adr_by_co, aes(x = co, y = adr)) + geom_point(size = 1, color = "#FF9999") + ggtitle("Average Daily Rate by Company") + theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) + labs(x="Company", y="Average Daily Rate", title="Average Daily Rate by Company") # This scatter plot shows the average daily rates for each company.
 ```
 
-## Average daily rates by agents
+## Average Daily Rates by Agent
 
 Knowing which agents has the highest average daily rates will enable higher revenue as they can attempt to increase bookings from those agents.
 
 ```{r}
 mean_adr_by_agent <- tapply(hotel$adr, hotel$agent, mean, na.rm = T) # This function creates a table showing the average daily rates by each agent. 
-
 
 mean_adr_by_agent <- data.frame(mean_adr_by_agent) # This function transforms the previous table into a dataframe.
 
@@ -641,7 +591,7 @@ mean_adr_by_agent <- cbind(newColName = rownames(mean_adr_by_agent), mean_adr_by
 rownames(mean_adr_by_agent) <- 1:nrow(mean_adr_by_agent) # This group of functions adds a name to one of the columns.
 
 names(mean_adr_by_agent)[names(mean_adr_by_agent) == "newColName"] <- "agent"
-names(mean_adr_by_agent)[names(mean_adr_by_agent) == "mean_adr_by_agent"] <- "adr" # This group of functions changes the names of the collumns to better describe them.
+names(mean_adr_by_agent)[names(mean_adr_by_agent) == "mean_adr_by_agent"] <- "adr" # This group of functions changes the names of the columns to better describe them.
 
 summary(mean_adr_by_agent)
 
@@ -654,12 +604,9 @@ ggplot(mean_adr_by_agent, aes(x = agent, y = adr)) + geom_point(size = 1, color 
 ```{r}
 mean(hotel$adr) #Find Adr on average
 
-
-
 tableJuly4 = hotel[hotel$arrival_date_month == "July" & hotel$arrival_date_day_of_month== 3 | hotel$arrival_date_day_of_month==4,] #Create Table to isolate specifc columns that we want
 
 round(mean(tableJuly4$adr, na.rm= TRUE),2) #Find mean for that holiday 
-
 
 tablenewyearseve = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 31,]
 round(mean(tablenewyearseve$adr, na.rm= TRUE),2) #repeat
@@ -669,11 +616,10 @@ round(mean(tableXmas$adr, na.rm= TRUE),2)
 
 tableValentines = hotel[hotel$arrival_date_month == "February" & hotel$arrival_date_day_of_month== 13 | hotel$arrival_date_day_of_month==14,]
 round(mean(tableValentines$adr, na.rm= TRUE),2)
-
 ```
 From the above information we have pretty interesting findings. When we look at the average ADR across the entire year, and compare that to the ADR for reservations during the Holidays, we see that the Hotel is actually charging the same price or lower for most holidays. Some of the typically most expensive holidays to travel (July 4th, Xmas, Valentines) have roughly the same ADR as the overall average. Only the ADR for New Years is higher, but only by 29%, whereas some hotes raise prices by as much as 100% during busy holidays. 
 
-## Does Resort type impact ADR on holidays?
+## Does Hotel Type Impact ADR on Holidays?
 
 ```{r}
 tableResort = hotel[hotel$hotel == "Resort Hotel",] #Here we are doing the same code as above, but also isolation for type of hotel to identify whether this is a hotel specifc problem 
@@ -688,44 +634,34 @@ mean(tableCity$adr)
 tableJuly4City = hotel[hotel$arrival_date_month == "July" & hotel$arrival_date_day_of_month== 3 | hotel$arrival_date_day_of_month==4 & hotel$hotel== "City Hotel",]
 
 round(mean(tableJuly4City$adr, na.rm= TRUE),2)
-
-
 ```
+
 ```{r}
 tableXmasCity = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 24 | hotel$arrival_date_day_of_month==25 & hotel$hotel=="City Hotel",]
 round(mean(tableXmasCity$adr, na.rm= TRUE),2)
 
-
 TableXmasResort = hotel[hotel$arrival_date_month == "December" & hotel$arrival_date_day_of_month== 24 | hotel$arrival_date_day_of_month==25 & hotel$hotel=="Resort Hotel",]
 round(mean(TableXmasResort$adr, na.rm= TRUE),2)
-
-
 ```
 From the above information we can also see that the problem is not hotel specifc. Both City and Resort hotels charge roughly the same ADR overall throughout the year as they do on a few key holidays (shown here are Christmas and July 4th)
 
-# Type of Client 
-## Which clients have the highest adr? 
-## Which clients have the most special requests?
-## Which clients have the highest cancellation rate 
-
 # Summary
 
-In conclusion, after analyzing the hotel data set we can draw the following conclusions and have the following recommendations. 
+After analyzing the hotel data set, we can draw the following conclusions and have the following recommendations. 
 
-1: Cancelation Section
+**Cancellation**
+Cancellations have a large impact on our revenue. We used this section as a means to visualize the decisions we should be making moving forward to optimize our processes. we recommend that we revisit at our listing numbers, deposit policy, and marketing strategies in the countries that have large numbers of cancellations and a proportion of it too! + strategic business plans to reduce the number of reservation modifications to the list in my comments
 
-2: Group Size, Type and Length of Stay Section 
-The largest takeaways from this section are as follows. Attempt to make reservations through Online TA market segment, which yields the highest ADR on average. In addition, it is important to look to minimize special requests, as they are likely tied to higher costs. More kids in groups means more special requests, thus the hotel might want to charge a higher fee if there are many kids in a reservation. 
+**Group Size, Type and Length of Stay** 
+Attempt to make reservations through Online TA market segment, which yields the highest ADR on average. In addition, it is important to look to minimize special requests, as they are likely tied to higher costs. More kids in groups means more special requests, thus the hotel might want to charge a higher fee if there are many kids in a reservation. 
 
+**Minimizing Costs**
+Guests making special requests is not that uncommon; while special requests typically mean that guests pay a higher daily rate, they can also be quite costly. Additionally, in regards to parking space, guests at city hotels are significantly more likely to need parking spaces than guests at resort hotels, suggesting they should allocate their space differently by designating different amounts of parking. Finally, as the number of kids in a party increases, the party is less likely to cancel or not show up.
 
-3. Minimizing Costs
+**Hotel Room Reservations and Market Segment Analysis**
 
-4. Michael Section 
+**Cancellations, Deposit Type, Customer Type**
+This data demonstrates that hotels should overbook transient groups who either do not have a deposit or have a non refundable deposit as there are a significant number of cancellations within that group.
 
-5. Alec Section 
-
-6. Time of Year Section
-Here, we discovered that the ADR (for both hotels) is roughly the same for the hotel during holiday and non holiday bookings. Thus, we recomend that the hotel begin to increase rates and prices during the holiday seasons, which is typical for any hotel. 
-
-
-
+**Time of Year**
+Here, we discovered that the ADR (for both hotels) is roughly the same for the hotel during holiday and non holiday bookings. Thus, we recommend that the hotel begin to increase rates and prices during the holiday seasons, which is typical for any hotel. 

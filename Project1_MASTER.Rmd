@@ -121,6 +121,7 @@ This graph illustrates the idea presented above in our comments on the cancellat
 ```{r}
 canceled<-hotel[hotel$is_canceled == 1,]
 countrycanceled<-aggregate(hotel$is_canceled, list(Country=hotel$country), mean)
+countrycanceled[order(countrycanceled$x, decreasing=TRUE),]
 countrycanceled
 ```
 The purpose of answering this question was to get a sense of the different markets that we should be focusing on moving forward, while also learning how to target those markets strategically. 
@@ -349,16 +350,17 @@ Interestingly, approximately 64% of guests at city hotels do not require parking
 ```{r}
 MonthsTable <- table(hotel$arrival_date_month, hotel$total_of_special_requests)
 MonthsTable
-#How to order months
-#How to pull insights
+
+colSums(MonthsTable)
+rowSums(MonthsTable)
 ```
 
 
 
 ```{r}
 SpecReqByMonth <- aggregate(hotel$total_of_special_requests, list(Month=hotel$arrival_date_month), mean) # Avg SpecReq by month
-SpecReqByMonth
-round(sort(SpecReqByMonth[,2], decreasing = T),2) # Need help keeping the month labels when I sort
+#SpecReqByMonth
+SpecReqByMonth[order(SpecReqByMonth$x, decreasing=TRUE),]
 
 ggplot(data = hotel) + geom_bar(mapping = aes(arrival_date_month, fill = "red"))
 ```

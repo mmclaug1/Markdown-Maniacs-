@@ -395,7 +395,7 @@ ggplot(hotel, aes(fill=reserved_room_type, y=count, x= market_segment)) + geom_b
 ```
 
 
-##What insights can we draw from the market segment of our clients and how it relates to repeat customers?
+## What insights can we draw from the market segment of our clients and how it relates to repeat customers?
 
 We have discovered that the majority of repeat customers are employed in the aviation, corporate or complementary market segments. This makes sense as these individuals would frequently travel for business purposes.  
 
@@ -412,7 +412,7 @@ ggplot(hotel, aes(x=market_segment, y=previous_cancellations, fill=reserved_room
   geom_bar(stat = "identity")
 ```
 
-##Cancellation Breakdown
+## Cancellation Breakdown
 
 37.04% of reservations are eventually canceled by the hotel's customers. This information can be used to understand available room capacity, especially when a hotel is sold out. 
 
@@ -433,7 +433,7 @@ print(num_cancelled_city/num_city_bookings)  #Proportion canceled in City Hotel 
 ```
 
 
-##Is there a connection between the market segment of our clients and their liklihood of being a repeat customer?
+## Is there a connection between the market segment of our clients and their liklihood of being a repeat customer?
 
 In this section we can see that the aviation, complementary, corporate market segments attract the most repeat customers. 
 
@@ -449,7 +449,7 @@ aggregate(is_repeated_guest ~ market_segment, data = hotel, mean)
 aggregate(is_repeated_guest ~ distribution_channel, data = hotel, mean)
 ```
 
-##How many guests recieved the hotel room they requested?
+## How many guests recieved the hotel room they requested?
 
 The hotel was able to accomodate 87.5% of room requests made by customers. 
 
@@ -473,7 +473,7 @@ levels(hotel$assigned_room_type)
 levels(hotel$reserved_room_type)
 ```
 
-##Previous Cancellations & Previous Bookings not Canceled 
+## Previous Cancellations & Previous Bookings not Canceled 
 
 Complementary, Groups and corporate are the most likely to cancel a reservation. 
 

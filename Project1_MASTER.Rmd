@@ -233,7 +233,7 @@ plot(hotel$market_segment, main="Number of Reservations by Market Segment", las=
 
 marketsegmentadr
 ```
-From the above graphs and information, we can see that group size doesn't have a noticiable impact on the market segment that books a reservation. More interestingly though, is looking at the data regarding which market segments book most frequently, and the average ADR of those segments. Online TA and Offline TA TO are the most frequently used booking methods, however, Online is more than $30 higher per day in ADR than offline booking (see table). This might suggest that the Hotel should shift towards exclusively online booking, as it is possible the room disocount are higher for offline booking. 
+From the above graphs and information, we can see that group size doesn't have a noticeable impact on the market segment that books a reservation. More interestingly though, is looking at the data regarding which market segments book most frequently, and the average ADR of those segments. Online TA and Offline TA TO are the most frequently used booking methods, however, Online is more than $30 higher per day in ADR than offline booking (see table). This might suggest that the Hotel should shift towards exclusively online booking, as it is possible the room discount are higher for offline booking. 
 
 ## Kids Impact on Special Requests 
 Here, we will look to see if number of children + babies is related to the number of special requests, as we suspect that a higher number of special requests will lead to larger costs for the hotel.  
@@ -394,24 +394,6 @@ ggplot(hotel, aes(fill=reserved_room_type, y=count, x= market_segment)) + geom_b
 
 ```
 
-
-## What insights can we draw from the market segment of our clients and how it relates to repeat customers?
-
-We have discovered that the majority of repeat customers are employed in the aviation, corporate or complementary market segments. This makes sense as these individuals would frequently travel for business purposes.  
-
-```{r}
-aggregate(is_repeated_guest ~ market_segment, data = hotel, mean)
-
-market_segment <- sort(table(hotel$market_segment))
-
-barplot(market_segment, main = "Market Segment", xlab = "Market Segment", ylab = "Frequency", cex.names = 0.4, col = "blue")
-
-#Online TA is the most popular method of booking a reservation with a hotel. 
-
-ggplot(hotel, aes(x=market_segment, y=previous_cancellations, fill=reserved_room_type)) + 
-  geom_bar(stat = "identity")
-```
-
 ## Cancellation Breakdown
 
 37.04% of reservations are eventually canceled by the hotel's customers. This information can be used to understand available room capacity, especially when a hotel is sold out. 
@@ -475,12 +457,7 @@ levels(hotel$reserved_room_type)
 
 ## Previous Cancellations & Previous Bookings not Canceled 
 
-Complementary, Groups and corporate are the most likely to cancel a reservation. 
-
 ```{r}
-
-library(ggplot2)
-
 aggregate(previous_cancellations ~ market_segment, data = hotel, mean)
 
 ##Corporate accounts for the highest number of bookings not canceled. 
@@ -495,9 +472,7 @@ ggplot(hotel, aes(fill=market_segment, y=previous_cancellations, x= total)) + ge
 
 aggregate(previous_bookings_not_canceled ~ market_segment, data = hotel, sum)
 ```
-
-To conclude in this section we explored the habits of customers in different market segments, and how it relates to room requests, repeat business and cancellations. After determining the trends of each market segment, we explored how many room requests were fulfilled, and the cancellation rate of different customers. This information will help the hotel predict future demand, forecast capacity when booked out, and help match room to customer requests. 
-
+<br/> Complementary, Groups and corporate are the most likely to cancel a reservation. 
 
 # Cancellations, Deposit Type, Customer Type
 In this section we will be looking at how deposit type and customer type impacts cancellations. This will help hotels book rooms to maximize revenue by properly booking hotel rooms. We will look at the adr for each customer type first to see which groups are most profitable. Next we look at the cancelations by deposit type and customer type, to show which groups have the most cancellations. Lastly we will look at deposit type by customer to type to show how many customers from each group use each deposit type.
@@ -672,6 +647,7 @@ Attempt to make reservations through Online TA market segment, which yields the 
 Guests making special requests is not that uncommon; while special requests typically mean that guests pay a higher daily rate, they can also be quite costly. Additionally, in regards to parking space, guests at city hotels are significantly more likely to need parking spaces than guests at resort hotels, suggesting they should allocate their space differently by designating different amounts of parking. Finally, as the number of kids in a party increases, the party is less likely to cancel or not show up.
 
 **Hotel Room Reservations and Market Segment Analysis**
+We explored the habits of customers in different market segments, and how they relates to room requests, repeat business, and cancellations. After determining the trends of each market segment, we explored how many room requests were fulfilled, and the cancellation rate of different customers. This information will help the hotel predict future demand, forecast capacity when booked out, and help match room to customer requests. 
 
 **Cancellations, Deposit Type, Customer Type**
 This data demonstrates that hotels should overbook transient groups who either do not have a deposit or have a non refundable deposit as there are a significant number of cancellations within that group.

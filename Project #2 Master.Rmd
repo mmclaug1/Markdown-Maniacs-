@@ -9,3 +9,42 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Data Import and Basic Structure Visualization
+```{r}
+listings<-read.csv("ProjectA_Listings2013.csv")
+str(listings)
+```
+## Data Cleaning
+```{r}
+listings$loan_status_description<-as.factor(listings$loan_status_description)
+listings$prosper_rating<-as.factor(listings$prosper_rating)
+listings$listing_category_id<-as.factor(listings$listing_category_id)
+listings$income_range<-as.factor(listings$income_range)
+listings$income_range_description<-as.factor(listings$income_range_description)
+listings$employment_status_description<-as.factor(listings$employment_status_description)
+listings$borrower_state<-as.factor(listings$borrower_state)
+listings$borrower_city<-as.factor(listings$borrower_city)
+listings$scorex<-as.factor(listings$scorex)
+listings$borrower_rate<-NULL
+```
+
+## Testings and Training Data Sets
+```{r}
+set.seed(123)
+test_set<-sample(1:nrow(listings), 8385)
+listings_train<-listings[-test_set,]
+listings_test<-listings[test_set,]
+
+```
+
+
+## Preliminary Linear Regression Models
+```{r}
+
+```
+
+## Preliminary Logistic Regressino Models
+```{r}
+
+```
+

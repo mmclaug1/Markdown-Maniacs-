@@ -13,19 +13,41 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 listings<-read.csv("ProjectA_Listings2013.csv")
 str(listings)
+View(listings)
+listings<-na.omit(listings)
 ```
 ## Data Cleaning
 ```{r}
-listings$loan_status_description<-as.factor(listings$loan_status_description)
+listings$number_of_days<-NULL
+listings$principal_balance<-NULL
+listings$loan_status<-NULL
+listings$loan_origination_date<-NULL
+listings$listing_category_id<-NULL
 listings$prosper_rating<-as.factor(listings$prosper_rating)
-listings$listing_category_id<-as.factor(listings$listing_category_id)
-listings$income_range<-as.factor(listings$income_range)
-listings$income_range_description<-as.factor(listings$income_range_description)
-listings$employment_status_description<-as.factor(listings$employment_status_description)
-listings$borrower_state<-as.factor(listings$borrower_state)
-listings$borrower_city<-as.factor(listings$borrower_city)
+listings$listing_term<-NULL
+listings$listing_monthly_payment<-NULL
 listings$scorex<-as.factor(listings$scorex)
-listings$borrower_rate<-NULL
+listings$income_range<-NULL
+listings$income_range_description<-as.factor(listings$income_range_description)
+listings$income_verifiable<-as.factor(listings$income_verifiable)
+listings$dti_wprosper_loan<-NULL
+listings$employment_status_description<-as.factor(listings$employment_status_description)
+listings$occupation<-as.factor(listings$occupation)
+listings$borrower_state<-NULL
+listings$borrower_city<-NULL
+listings$delinquencies_last7_years<-NULL
+listings$lender_indicator<-NULL
+listings$first_recorded_credit_line<-NULL
+listings$public_records_last10_years<-NULL
+listings$was_delinquent_derog<-NULL
+```
+
+## Preliminary Linear Regression Models
+```{r}
+lr_model_1<-lm(borrower_rate~.,data = listings)
+summary(lr_model_1)
+step_model_1<-step(lr_model_1)
+summary(step_model_1)
 ```
 
 ## Testings and Training Data Sets

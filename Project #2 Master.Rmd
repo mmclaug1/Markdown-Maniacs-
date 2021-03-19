@@ -50,23 +50,97 @@ step_model_1<-step(lr_model_1)
 summary(step_model_1)
 ```
 
-## Testings and Training Data Sets
 ```{r}
-set.seed(123)
-test_set<-sample(1:nrow(listings), 8385)
-listings_train<-listings[-test_set,]
-listings_test<-listings[test_set,]
+listingsGLM <- listings
+library(class)
+library(tidyverse)
+library(ggplot2)
+library(vctrs)
+library(caret)
+library(gmodels)
+library(e1071)
+library(dplyr)
+library(speedglm)
+library(Matrix)
+library(MASS)
+library(fastglm)
+```
+## Data Cleaning
+```{r}
+listingsGLM$loan_status_description<-as.factor(listingsGLM$loan_status_description)
+listingsGLM$prosper_rating<-as.factor(listingsGLM$prosper_rating)
+listingsGLM$listing_category_id<-as.factor(listingsGLM$listing_category_id)
+listingsGLM$income_range<-as.factor(listingsGLM$income_range)
+listingsGLM$income_range_description<-as.factor(listingsGLM$income_range_description)
+listingsGLM$employment_status_description<-as.factor(listingsGLM$employment_status_description)
+listingsGLM$borrower_state<-as.factor(listingsGLM$borrower_state)
+listingsGLM$borrower_city<-as.factor(listingsGLM$borrower_city)
+listingsGLM$scorex<-as.factor(listingsGLM$scorex)
+listingsGLM$occupation <- as.factor(listingsGLM$occupation)
+listingsGLM$first_recorded_credit_line <- as.Date(listingsGLM$first_recorded_credit_line, format = "%m/%d/%Y")
+listingsGLM$loan_origination_date <- as.Date(listingsGLM$loan_origination_date, format = "%m/%d/%Y")
+listingsGLM$loan_status_description <- ifelse(listingsGLM$loan_status_description == "CHARGEOFF", 1, ifelse(listingsGLM$loan_status_description == "DEFAULT", 1, ifelse(listingsGLM$loan_status_description == "COMPLETED", 0, ifelse(listingsGLM$loan_status_description == "CURRENT", 0, NA))))
+listingsGLM$loan_status_description<-as.factor(listingsGLM$loan_status_description)
 
+listingsGLM$loan_status <- NULL
+listingsGLM$borrower_city <- NULL
+listingsGLM$borrower_state <- NULL
+listingsGLM$prosper_rating <- NULL
+listingsGLM$income_range_description <- NULL
+listingsGLM$occupation <- NULL
+listingsGLM$total_trade_items <- NULL
+listingsGLM$now_delinquent_derog <- NULL
+listingsGLM$delinquencies_over90_days <- NULL
+str(listingsGLM)
 ```
 
 
-## Preliminary Linear Regression Models
-```{r}
 
+## Testings and Training Data Sets
+```{r}
+set.seed(123)
+test_set<-sample(1:nrow(listingsGLM), 8385)
+listingsGLM_train<-listingsGLM[-test_set,]
+listingsGLM_test<-listingsGLM[test_set,]
 ```
 
 ## Preliminary Logistic Regressino Models
 ```{r}
+logit_Alec_4 <- glm(loan_status_description ~ is_homeowner + principal_balance + income_verifiable + employment_status_description + current_delinquencies + monthly_debt + months_employed + scorex, data = listingsGLM, family = "binomial")
+summary(logit_Alec_4)
 
+test_predictions_alec <- predict(logit_Alec_4, newdata = listingsGLM_test, type = "response")
+
+summary(test_predictions_alec)
+
+test_predictions_alec <- ifelse(test_predictions_alec > 0.5, 1, 0)
+View(listingsGLM)
+CrossTable(x = test_predictions_alec, y = listingsGLM_test$loan_status_description, 
+           prop.chisq=FALSE)
+
+confusionMatrix(as.factor(test_predictions_alec), as.factor(listingsGLM_test$loan_status_description), positive = "1")
 ```
+  
+Something is going wrong down here, im not sure why. The glm with all the variables is what the step function gives, but the step function doesnt work, it fails at a point. 
+  
+```{}
+logit_alec_big <- glm(loan_status_description ~ ., data = listingsGLM, family = "binomial")
+summary(logit_alec_big)
 
+step_logit_big <- step(logit_alec_big)
+summary(step_logit_big)
+
+logit_model_alec_big <- glm(loan_status_description ~ months_employed + installment_balance + was_delinquent_derog + monthly_debt + borrower_rate + is_homeowner + dti_wprosper_loan + principal_balance + amount_funded + loan_origination_date + number_of_days, newdata = listingsGLM_test, type = "response")
+summary(logit_model_alec_big)
+
+test_predictions_alec_big <- predict(logit_alec_big, newdata = listingsGLM_test, type = "response")
+
+summary(test_predictions_alec_big)
+
+test_predictions_alec_big <- ifelse(test_predictions_alec > 0.5, 1, 0)
+
+CrossTable(x = test_predictions_alec_big, y = listingsGLM_test$loan_status_description, 
+           prop.chisq=FALSE)
+
+confusionMatrix(as.factor(test_predictions_alec_big), as.factor(listingsGLM_test$loan_status_description), positive = "1")
+```

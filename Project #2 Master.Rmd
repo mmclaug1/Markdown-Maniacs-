@@ -21,6 +21,7 @@ listings<-na.omit(listings)
 listings$number_of_days<-NULL
 listings$principal_balance<-NULL
 listings$loan_status<-NULL
+listings$loan_status_description<-NULL
 listings$loan_origination_date<-NULL
 listings$listing_category_id<-NULL
 listings$prosper_rating<-as.factor(listings$prosper_rating)

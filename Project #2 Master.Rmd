@@ -1,22 +1,32 @@
 ---
-title: 'Project #2 Master'
-author: "Kenneth Andrysiak, Alec Palo, Joel Revo, Jacob Cohen, Michael McLaughlan"
-date: "3/12/2021"
-output: html_document
+title: 'Project #2'
+author: "Kenneth Andrysiak, Joel Revo, Alec Palo, Jacob Cohen, Michael McLaughlan"
+date: "2/10/2021"
+output: 
+  html_document: 
+    code_folding: hide
+    number_sections: true 
+    toc: true
+    toc_float: 
+      collapsed: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+#Introduction 
 
-## Data Import and Basic Structure Visualization
+The purpose of this report is threefold. First, we want to identify what predictor variables lead to borrowers on prosper obtaining a higher interest rate. This will give us an idea of what the market thinks are "credit risks." Second, we will make a logistic model to determine what predictor variables are leading to atual loan defaults. From there, we will then be able to compare these two models, to see if the same variables leading to higher interest rates are also the ones causing defaults. If there is a difference between the two, there is likely an arbitrage opportunity. This could mean the market thinks one predictor is a risk that actually isn't, or, a risk that isn't being considered by the market is in fact causing defaults. 
+# Data Import and Basic Structure Visualization
 ```{r}
 listings<-read.csv("ProjectA_Listings2013.csv")
 str(listings)
-View(listings)
 listings<-na.omit(listings)
+listingsGLM <- listings
+
+
 ```
-## Data Cleaning
+# Data Cleaning For Linear Regression
 ```{r}
 listings$number_of_days<-NULL
 listings$principal_balance<-NULL
@@ -43,16 +53,16 @@ listings$public_records_last10_years<-NULL
 listings$was_delinquent_derog<-NULL
 ```
 
-## Preliminary Linear Regression Models
+# Linear Regression Model
 ```{r}
 lr_model_1<-lm(borrower_rate~.,data = listings)
-summary(lr_model_1)
+
 step_model_1<-step(lr_model_1)
 summary(step_model_1)
 ```
-
+#Linear Regression Interpretation 
 ```{r}
-listingsGLM <- listings
+
 library(class)
 library(tidyverse)
 library(ggplot2)
@@ -65,39 +75,44 @@ library(speedglm)
 library(Matrix)
 library(MASS)
 library(fastglm)
+
 ```
-## Data Cleaning
+# Data Cleaning Logistic Regression 
 ```{r}
-listingsGLM$loan_status_description<-as.factor(listingsGLM$loan_status_description)
+
 listingsGLM$prosper_rating<-as.factor(listingsGLM$prosper_rating)
-listingsGLM$listing_category_id<-as.factor(listingsGLM$listing_category_id)
 listingsGLM$income_range<-as.factor(listingsGLM$income_range)
 listingsGLM$income_range_description<-as.factor(listingsGLM$income_range_description)
 listingsGLM$employment_status_description<-as.factor(listingsGLM$employment_status_description)
-listingsGLM$borrower_state<-as.factor(listingsGLM$borrower_state)
-listingsGLM$borrower_city<-as.factor(listingsGLM$borrower_city)
 listingsGLM$scorex<-as.factor(listingsGLM$scorex)
 listingsGLM$occupation <- as.factor(listingsGLM$occupation)
 listingsGLM$first_recorded_credit_line <- as.Date(listingsGLM$first_recorded_credit_line, format = "%m/%d/%Y")
 listingsGLM$loan_origination_date <- as.Date(listingsGLM$loan_origination_date, format = "%m/%d/%Y")
 listingsGLM$loan_status_description <- ifelse(listingsGLM$loan_status_description == "CHARGEOFF", 1, ifelse(listingsGLM$loan_status_description == "DEFAULT", 1, ifelse(listingsGLM$loan_status_description == "COMPLETED", 0, ifelse(listingsGLM$loan_status_description == "CURRENT", 0, NA))))
-listingsGLM$loan_status_description<-as.factor(listingsGLM$loan_status_description)
+
 
 listingsGLM$loan_status <- NULL
 listingsGLM$borrower_city <- NULL
 listingsGLM$borrower_state <- NULL
-listingsGLM$prosper_rating <- NULL
-listingsGLM$income_range_description <- NULL
-listingsGLM$occupation <- NULL
+#listingsGLM$prosper_rating <- NULL
+#listingsGLM$income_range_description <- NULL
+#listingsGLM$occupation <- NULL
 listingsGLM$total_trade_items <- NULL
 listingsGLM$now_delinquent_derog <- NULL
-listingsGLM$delinquencies_over90_days <- NULL
-str(listingsGLM)
+#listingsGLM$delinquencies_over90_days <- NULL
+listingsGLM$number_of_days<-NULL
+listingsGLM$listing_term<-NULL
+listingsGLM$listing_monthly_payment<-NULL
+listingsGLM$principal_balance<-NULL
+listingsGLM$loan_origination_date<-NULL
+
+
 ```
 
 
 
 ## Testings and Training Data Sets
+
 ```{r}
 set.seed(123)
 test_set<-sample(1:nrow(listingsGLM), 8385)
@@ -105,43 +120,134 @@ listingsGLM_train<-listingsGLM[-test_set,]
 listingsGLM_test<-listingsGLM[test_set,]
 ```
 
-## Preliminary Logistic Regressino Models
+#Logistic Regressino Model
+Our first task was to look at a logistic model using the same variables that were significant in our linear regression model. 
 ```{r}
-logit_Alec_4 <- glm(loan_status_description ~ is_homeowner + principal_balance + income_verifiable + employment_status_description + current_delinquencies + monthly_debt + months_employed + scorex, data = listingsGLM, family = "binomial")
-summary(logit_Alec_4)
+logit_group_1<-glm(loan_status_description ~ stated_monthly_income + income_verifiable + amount_funded + prosper_rating + scorex + prosper_score + stated_monthly_income + income_verifiable + employment_status_description + occupation + current_delinquencies + public_records_last12_months + credit_lines_last7_years + inquiries_last6_months + amount_delinquent + current_credit_lines + open_credit_lines + bankcard_utilization + installment_balance + total_inquiries + satisfactory_accounts + delinquencies_over30_days + 
+    delinquencies_over60_days ,data=listingsGLM, family = "binomial" )
 
-test_predictions_alec <- predict(logit_Alec_4, newdata = listingsGLM_test, type = "response")
+summary(logit_group_1)
 
-summary(test_predictions_alec)
+```
 
-test_predictions_alec <- ifelse(test_predictions_alec > 0.5, 1, 0)
-View(listingsGLM)
-CrossTable(x = test_predictions_alec, y = listingsGLM_test$loan_status_description, 
+
+After removing the variables that are insignificant, we are left with the below model. 
+```{r}
+logit_group_2<-glm(loan_status_description ~ stated_monthly_income + income_verifiable + amount_funded + prosper_rating + stated_monthly_income + income_verifiable + credit_lines_last7_years + bankcard_utilization + installment_balance + total_inquiries + satisfactory_accounts + delinquencies_over30_days + 
+    delinquencies_over60_days ,data=listingsGLM, family = "binomial" )
+
+
+summary(logit_group_2)
+
+
+```
+#Logistic Regression Model - Loan Status Description vs. entire data set 
+However, in order to make a better model, we decided that it would be better to run "loan_status_description" against every variable in the dataset. Then, one by one, the insignificant variables were removed. 
+```{r}
+logit_group_3<-glm(loan_status_description ~ .,data=listingsGLM, family = "binomial" )
+
+summary(logit_group_3)
+```
+Here, we tested the model and slowly removed variables until only significant ones remained. This was done in one step here for the simplicity and to be succinct. (in practice we ran the model after removing each variable, to check to see if other variables became significant)
+```{r}
+
+listingsGLM2<-listingsGLM
+listingsGLM2$income_range_description <-NULL
+listingsGLM2$occupation<-NULL
+listingsGLM2$listing_category_id<-NULL
+listingsGLM2$months_employed<-NULL
+listingsGLM2$delinquencies_last7_years<-NULL
+listingsGLM2$was_delinquent_derog<-NULL
+listingsGLM2$public_records_last12_months<- NULL
+listingsGLM2$delinquencies_over30_days<-NULL
+listingsGLM2$total_inquiries<-NULL
+listingsGLM2$first_recorded_credit_line<-NULL
+listingsGLM2$real_estate_balance<-NULL
+listingsGLM2$revolving_balance<-NULL
+listingsGLM2$installment_balance<-NULL
+listingsGLM2$total_open_revolving_accounts<-NULL
+listingsGLM2$real_estate_payment<-NULL
+listingsGLM2$bankcard_utilization<-NULL
+listingsGLM2$open_credit_lines<-NULL
+listingsGLM2$inquiries_last6_months<-NULL
+listingsGLM2$dti_wprosper_loan<-NULL
+listingsGLM2$income_verifiable<-NULL
+listingsGLM2$employment_status_description<-NULL
+listingsGLM2$lender_indicator<-NULL
+listingsGLM2$current_credit_lines<-NULL
+listingsGLM2$installment_balance<-NULL
+listingsGLM2$prosper_score<-NULL
+listingsGLM2$income_range<-NULL
+listingsGLM2$current_delinquencies<-NULL
+listingsGLM2$public_records_last10_years<-NULL
+listingsGLM2$delinquencies_over60_days<-NULL
+listingsGLM2$delinquencies_over90_days<-NULL
+listingsGLM2$amount_delinquent<-NULL
+
+
+logit_group_3<-glm(loan_status_description ~ .,data=listingsGLM2, family = "binomial" )
+
+summary(logit_group_3)
+
+```  
+The resulting model that we are left with will be our final model, because it first analyzed all neccesary variables in the dataset, and because it has roughly the same AIC, with a lower number of independent variables, thus it likely better explains the data. 
+
+```{r}
+
+set.seed(123)
+test_set<-sample(1:nrow(listingsGLM2), 8385)
+listingsGLM3_train<-listingsGLM2[-test_set,]
+listingsGLM3_test<-listingsGLM2[test_set,]
+
+test_predictions_FINAL <- predict(logit_group_3, newdata = listingsGLM3_test, type = "response")
+
+
+test_predictions_FINAL <- ifelse(test_predictions_FINAL > 0.20, 1, 0)
+
+CrossTable(x = test_predictions_FINAL, y = listingsGLM3_test$loan_status_description, 
            prop.chisq=FALSE)
 
-confusionMatrix(as.factor(test_predictions_alec), as.factor(listingsGLM_test$loan_status_description), positive = "1")
+confusionMatrix(as.factor(test_predictions_FINAL), as.factor(listingsGLM3_test$loan_status_description), positive = "1")
+
 ```
   
-Something is going wrong down here, im not sure why. The glm with all the variables is what the step function gives, but the step function doesnt work, it fails at a point. 
-  
-```{}
-logit_alec_big <- glm(loan_status_description ~ ., data = listingsGLM, family = "binomial")
-summary(logit_alec_big)
 
-step_logit_big <- step(logit_alec_big)
-summary(step_logit_big)
+#Logistic Model Interepretation 
+First, interepreting our model. 
 
-logit_model_alec_big <- glm(loan_status_description ~ months_employed + installment_balance + was_delinquent_derog + monthly_debt + borrower_rate + is_homeowner + dti_wprosper_loan + principal_balance + amount_funded + loan_origination_date + number_of_days, newdata = listingsGLM_test, type = "response")
-summary(logit_model_alec_big)
+The significant variables are 
 
-test_predictions_alec_big <- predict(logit_alec_big, newdata = listingsGLM_test, type = "response")
+-Amount Funded 
+-Borrower Rate
+-Prosper Rating
+-Scorex
+-Stated Monthly Income
+-Monthly Debt
+-Credit Lines in the past 7 years
+-Revolving Available Percentage
+-Satisfactory Accounts
+-Home onwership 
 
-summary(test_predictions_alec_big)
 
-test_predictions_alec_big <- ifelse(test_predictions_alec > 0.5, 1, 0)
+Amount funded and borrower rate are highly significant, and positively correlated to defaults. As they increase, the chance of default increases significantly as well. This makes sense, since a larger loan is likely more difficult to pay back, and a higher interest rate makes that loan harder to pay back as well.  
 
-CrossTable(x = test_predictions_alec_big, y = listingsGLM_test$loan_status_description, 
-           prop.chisq=FALSE)
+Prosper rating and scorex are both significant, but only for a few different levels. For propser rating, only the highest level (AA) is significant. This means that a really high rated borrower would be less likely to default, but after a AA rating, the results are insignificant. The same is true for scorex. Only borrowers with a 748+ scorex rating have a statiscially significant lower chance of default than other rating borrowers. This means that borrowers with a 600 rating and borrowers with a 700 rating are not statistically significant from each other. 
 
-confusionMatrix(as.factor(test_predictions_alec_big), as.factor(listingsGLM_test$loan_status_description), positive = "1")
-```
+Stated monthly income is statiscally significant, but the impact is relatively small. However, as stated monthly income increases, the chance of default decreases. The small impact does make sense however, since the value is dollars, and the range of values is many thousands of dollars.
+
+Monthy debt is also very significant, and postively correlated to loan default probability. This means that the more monthly debt that a borrower has, the more likely they are to default on their loans. This makes sense, as more debt likely puts a borrower in a tougher hole to climb out of. 
+
+Credit lines in the past 7 years is also significant, and negatively correlated to default probability. So, this likely means that people that have been offered and given more credit over the past 7 years, are also more likely to pay it back on time. 
+
+Satisfactory accounts is also significant. However, it is positively correlated. This means the more satisfactory accounts that a borrower has, the more likely they are to default. This could also be correlated to monthly debt, as, meaning that a borrwer with many satisfactory accounts is also taking on a large amount of debt. 
+
+Finally, home ownership is significant, and POSITIVELY correlated. This means that someone who owns a home is actually more likely to default on a loan than someone who does not. 
+
+
+#Arbitrage Opportunities 
+
+Here, we are looking for items that are significant in one model, but not in another, or for significant items that are much different in importance in one model vs. another. 
+
+1. Home ownership 
+Homeownership is significant in our logisitc model, but not in our linear model. It might be fair to assume that people would not consider someone who owns a home to be a risky borrower (which is evidenced by our linear model)
+however, our logisitic model shows us that these borrowers are more likely to default on their loans than a non-homeowner. In an investment setting, this would mean we are likely to not invest in home owners as their added risk is not priced into the interest rate. 

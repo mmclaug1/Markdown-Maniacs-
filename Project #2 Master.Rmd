@@ -296,39 +296,31 @@ Home owners were more likely to default than non-home owners, according to our l
 3. **Revolving Available Percentage:** 
 The percentage of a loan or credit line a borrower utilizes is an indication of their financial condition and the amount they would have to pay back. If an individual has a revolver fully utilized, they would have to pay back that loan before the new loan. 
 
-4. **Income Verifiable:**
-in logistic, not linear
+## Linear Regression Variables not in Logistic Regression
 
-5. **Bank Card Utilization:**
-in logistic, not linear
+4. **Income Verifiable:**
+Verifying the income of an individual is significant and is a way for lenders to ensure the income of a borrower is what they claim it to be. This was not significant in determining whether a borrower will default. We suspect this is because the vast majority of borrowers had their income verified, and if this was removed it could cause many bad loans. We believe this is an important variable and that it is correctly being used to price loans, despite not being significant in predicting defaults. 
+
+5. **Bank Card Utilization, current credit lines:**
+While the utilization rate of an individuals bank card can provide a glimpse into their current borrowing/credit needs, it was not significant in predicting a default. This may be due to the fact that many individuals use a credit card to build credit, earn rewards and track their spending. Also borrowers are using a credit card the way it was meant to be used, and their use may not reflect their actual financial health. This same logic applied to current credit lines.
 
 6. **Installment Balance:**
-in logistic, not linear
+The installment balance is the regular payment that a borrower makes to the lender, and was not significant in predicting default. While a higher amount provides more risk for the lender due to capital exposure, the borrower may be financially able to manage payments and prior due diligence should prevent unworthy borrowers from receiving large loans. For this reason this variable should not be used to price loans moving forward. 
 
 7. **Loan Status Description:**
-in linear, not logistic
+The record of ongoing or completed loans was used to price loans, and was negatively correlated with the interest rate. We believe the instance of multiple loans should not be used to price loans since prior due diligence should determine if the borrower is financially capable of taking on an additional loan. 
 
 8. **Employment Status Description:**
-in linear, not logistic
+The employment status was significant for several levels, however should not be used to price a loan. While the employment status provides a glimpse into the job one holds, it does not predict income, or account for the fact individuals with lower incomes may take out lower loans and therefore not be more likely to default. We recommend removing this criteria when pricing loans. 
 
-9. **Current Delinquencies:**
-in linear, not logistic
+9. **Current Delinquencies, Amount Delinquent:**
+We were surprised to see this criteria is not significant in predicting default, and believe it should still be used to price loans. Current delinquencies may not have predicted default due to the individual's priority of paying back a particular debt. This is also somewhat uncommon and that may contribute to its muted significance.  We suggest continuing to use this variable when pricing loans.
 
-10. **Public Records (last 12 months):**
-in linear, not logistic
-
-11. **Inquiries (last 6 months):**
-in linear, not logistic
-
-12. **Amount Delinquent:**
-in linear, not logistic
-
-13. **Current Credit Lines:**
-in linear, not logistic
-
-14. **Total Inquiries:**
-in linear, not logistic
+10. **Public Records (last 12 months), Inquiries (last 6 months), Total Inquiries:**
+The inquiries into your finances over a period should not be used to price loans, and may be a product of loan shopping, applying to jobs, etc. While this criteria measures your financial activity to an extent, it does not provide enough information alone to justify increasing the interest rate on a loan. 
 
 ## Arbitrage Conclusion
 
 It is clear that this lender is using a set of pre-defined criteria when pricing loans, some of which is not relevant to the borrower's probability of default. The lender should use this information to optimize their pricing strategy to ensure the correct risk-reward profile when issuing loans.
+
+The above analysis of variables shows that we believe several variables should be removed from pricing loans, while some should still be used. The removal of variables that paint an incomplete financial picture of the borrower or unfairly bucket them into groups should be removed, as they are not accurate in prediciting default. At the same time many variables should be added to the pricing of loans, including monthly debt, home ownership, and revolving available percentage. 

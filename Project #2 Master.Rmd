@@ -14,7 +14,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-#Introduction 
+# Introduction 
 
 The purpose of this report is threefold. First, we want to identify what predictor variables lead to borrowers on prosper obtaining a higher interest rate. This will give us an idea of what the market thinks are "credit risks." Second, we will make a logistic model to determine what predictor variables are leading to atual loan defaults. From there, we will then be able to compare these two models, to see if the same variables leading to higher interest rates are also the ones causing defaults. If there is a difference between the two, there is likely an arbitrage opportunity. This could mean the market thinks one predictor is a risk that actually isn't, or, a risk that isn't being considered by the market is in fact causing defaults. 
 
@@ -61,7 +61,7 @@ step_model_1<-step(lr_model_1)
 summary(step_model_1)
 ```
 
-##Linear Regression Intrepretation:
+## Linear Regression Intrepretation:
 
 The significant Variables for the Linear Regression Model includes:
 
@@ -101,25 +101,7 @@ Current delinquencies, amount delinquent and delinquencies over 30 days are unsu
 Public records last 12 months, credit lines last 7 years, and inquiries last 6 months, total inquiries,and current credit lines are positively correlated with the interest rate, showing that outstanding credit lines and a history of loans increases the interest rate. This may be because the person is more likely to have excess debt to pay back, or is more likely to take on additional debt in the future. All of these factors point to the borrower's credit history. 
 Satisfactory accounts is significant and negatively correlated with the interest rate, which makes sense since healthy loans and financial accounts is a positive indication of someone's creditworthiness. 
 
-
-#Arbitrage Opportunities 
-Here we will look at the differences between the significant factors for the linear and regression models. This analysis will help us understand if the market is missing significant factors correlated to default, or if it is correctly assessing the risks associated with default and correctly pricing loans. 
-
-These factors were significant in our logistic model, but not our regression model:
-
-1. Monthly Debt 
-The monthly debt of an individual showcases their financial obligations over a short period of time, which allows a lender to evaluate their debt load compared to their income. Factoring a borrower's monthly debt into the interest rate would better price loans according to their risk profile.
-
-2. Home ownership
-Home owners were more likely to default than non-home owners, according to our logistic model. The financial obligation of owning a home and paying a mortgage could potentially impact the ability of an individual to repay a separate loan. This should be taken into account when pricing loans. 
-
-3. Revolving Available Percentage 
-The percentage of a loan or credit line a borrower utilizes is an indication of their financial condition and the amount they would have to pay back. If an individual has a revolver fully utilized, they would have to pay back that loan before the new loan. 
-
-#Linear Regression Arbitrage Conclusion
-It is clear that this lender is using a set of pre-defined criteria when pricing loans, some of which is not relevant to the borrower's probability of default. The lender should use this information to optimize their pricing strategy to ensure the correct risk-reward profile when issuing loans. 
 ```{r}
-
 library(class)
 library(tidyverse)
 library(ggplot2)
@@ -132,7 +114,6 @@ library(speedglm)
 library(Matrix)
 library(MASS)
 library(fastglm)
-
 ```
 
 # Data Cleaning Logistic Regression 
@@ -165,7 +146,7 @@ listingsGLM$principal_balance<-NULL
 listingsGLM$loan_origination_date<-NULL
 ```
 
-#Logistic Regression Model
+# Logistic Regression Model
 
 Our first task was to look at a logistic model using the same variables that were significant in our linear regression model. 
 
@@ -195,7 +176,7 @@ summary(logit_group_2)
 
 ```
 
-#Logistic Regression Model - Loan Status Description vs. entire data set 
+# Logistic Regression Model - Loan Status Description vs. entire data set 
 
 However, in order to make a better model, we decided that it would be better to run "loan_status_description" against every variable in the dataset. Then, one by one, the insignificant variables were removed. 
 ```{r}
@@ -246,7 +227,8 @@ logit_group_3<-glm(loan_status_description ~ .,data=listingsGLM2, family = "bino
 summary(logit_group_3)
 
 ```  
-The resulting model that we are left with will be our final model, because it first analyzed all necessary variables in the dataset, and because it has roughly the same AIC, with a lower number of independent variables, thus it likely better explains the data. 
+
+The resulting model that we are left with will be our final model, because it first analyzed all necessary variables in the dataset, and because it has roughly the same AIC, with a lower number of independent variables, thus it likely better explains the data.
 
 ```{r}
 
@@ -268,24 +250,24 @@ confusionMatrix(as.factor(test_predictions_FINAL), as.factor(listingsGLM3_test$l
 ```
   
 
-#Logistic Model Interepretation 
-First, interepreting our model. 
+# Logistic Model Interepretation 
 
-The significant variables are 
+First, interepreting our model. <br/>
 
--Amount Funded 
--Borrower Rate
--Prosper Rating
--Scorex
--Stated Monthly Income
--Monthly Debt
--Credit Lines in the past 7 years
--Revolving Available Percentage
--Satisfactory Accounts
--Home onwership 
+The significant variables are: <br/>
 
+- Amount Funded 
+- Borrower Rate
+- Prosper Rating
+- Scorex
+- Stated Monthly Income
+- Monthly Debt
+- Credit Lines in the past 7 years
+- Revolving Available Percentage
+- Satisfactory Accounts
+- Home ownership 
 
-Amount funded and borrower rate are highly significant, and positively correlated to defaults. As they increase, the chance of default increases significantly as well. This makes sense, since a larger loan is likely more difficult to pay back, and a higher interest rate makes that loan harder to pay back as well.  
+Amount funded and borrower rate are highly significant, and positively correlated to defaults. As they increase, the chance of default increases significantly as well. This makes sense, since a larger loan is likely more difficult to pay back, and a higher interest rate makes that loan harder to pay back as well. 
 
 Prosper rating and scorex are both significant, but only for a few different levels. For prosper rating, only the highest level (AA) is significant. This means that a really high rated borrower would be less likely to default, but after a AA rating, the results are insignificant. The same is true for scorex. Only borrowers with a 748+ scorex rating have a statistically significant lower chance of default than other rating borrowers. This means that borrowers with a 600 rating and borrowers with a 700 rating are not statistically significant from each other. 
 
@@ -299,11 +281,54 @@ Satisfactory accounts is also significant. However, it is positively correlated.
 
 Finally, home ownership is significant, and POSITIVELY correlated. This means that someone who owns a home is actually more likely to default on a loan than someone who does not. 
 
+# Arbitrage Opportunities 
 
-#Arbitrage Opportunities 
+Here we will look at the differences between the significant factors for the linear and regression models. This analysis will help us understand if the market is missing significant factors correlated to default, or if it is correctly assessing the risks associated with default and correctly pricing loans.
 
-Here, we are looking for items that are significant in the regression model, but not in the other, or for significant items that are much different in importance in one model vs. another. 
+The following variables were significant in our logistic model, but not our regression model:
 
-1. Home ownership 
-Home ownership is significant in our logistic model, but not in our linear model. It might be fair to assume that people would not consider someone who owns a home to be a risky borrower (which is evidenced by our linear model)
-however, our logistic model shows us that these borrowers are more likely to default on their loans than a non-homeowner. In an investment setting, this would mean we are likely to not invest in home owners as their added risk is not priced into the interest rate. 
+1. **Monthly Debt:** 
+The monthly debt of an individual showcases their financial obligations over a short period of time, which allows a lender to evaluate their debt load compared to their income. Factoring a borrower's monthly debt into the interest rate would better price loans according to their risk profile.
+
+2. **Home ownership:**
+Home owners were more likely to default than non-home owners, according to our logistic model. The financial obligation of owning a home and paying a mortgage could potentially impact the ability of an individual to repay a separate loan. This should be taken into account when pricing loans. 
+
+3. **Revolving Available Percentage:** 
+The percentage of a loan or credit line a borrower utilizes is an indication of their financial condition and the amount they would have to pay back. If an individual has a revolver fully utilized, they would have to pay back that loan before the new loan. 
+
+4. **Income Verifiable:**
+in logistic, not linear
+
+5. **Bank Card Utilization:**
+in logistic, not linear
+
+6. **Installment Balance:**
+in logistic, not linear
+
+7. **Loan Status Description:**
+in linear, not logistic
+
+8. **Employment Status Description:**
+in linear, not logistic
+
+9. **Current Delinquencies:**
+in linear, not logistic
+
+10. **Public Records (last 12 months):**
+in linear, not logistic
+
+11. **Inquiries (last 6 months):**
+in linear, not logistic
+
+12. **Amount Delinquent:**
+in linear, not logistic
+
+13. **Current Credit Lines:**
+in linear, not logistic
+
+14. **Total Inquiries:**
+in linear, not logistic
+
+## Arbitrage Conclusion
+
+It is clear that this lender is using a set of pre-defined criteria when pricing loans, some of which is not relevant to the borrower's probability of default. The lender should use this information to optimize their pricing strategy to ensure the correct risk-reward profile when issuing loans.

@@ -1,0 +1,169 @@
+---
+title: "Project 3 - Early"
+author: ""
+date: "3/29/2021"
+output: 
+  html_document: 
+    code_folding: hide
+    number_sections: true 
+    toc: true
+    toc_float: 
+      collapsed: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r include=FALSE}
+library(VGAM)
+library(class)
+library(caret)
+library(gmodels)
+library(tidyverse)
+library(lmtest)
+library(aod)
+library(neuralnet)
+library(C50)
+```
+
+#Data Cleaning 
+```{r}
+
+Airlinedata<-read.csv("Invistico_Airline.csv")
+
+
+Airlinedata$Gender<-as.factor(Airlinedata$Gender)
+Airlinedata$Customer.Type<-as.factor(Airlinedata$Gender)
+Airlinedata$Type.of.Travel<-as.factor(Airlinedata$Type.of.Travel)
+Airlinedata$Class<-as.factor(Airlinedata$Class)
+
+
+
+Airlinedata$satisfaction<-ifelse(Airlinedata$satisfaction=="satisfied", 1, 0)
+
+Airlinedata <- na.omit(Airlinedata)
+
+summary(Airlinedata)
+str(Airlinedata)
+
+```
+
+#Normalize The Data
+```{r}
+Airlinemm <- as.data.frame(model.matrix(~.-1,Airlinedata))
+
+
+# Randomize the rows in the data (shuffling the rows)
+set.seed(12345)
+airline_random <- Airlinemm[sample(nrow(Airlinemm)),]
+
+#Normalize the data
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+# we are going to normalize everything 
+airline_norm <- as.data.frame(lapply(airline_random, normalize))
+```
+#Get Training and Testing Samples
+```{r}
+airline_train <- airline_norm[1:105000,]
+airline_test <- airline_norm[105001:129487,]
+
+
+airline_train_labels <- airline_norm[1:105000, "satisfaction"]
+airline_test_labels <- airline_norm[105001:129487, "satisfaction"]
+```
+
+#Logistic Model 
+```{r cache=TRUE}
+
+airline_glm <- glm(satisfaction ~ ., data = airline_train, family= "binomial")
+
+summary(airline_glm)
+
+step_airline<-step(airline_glm)
+
+summary(step_airline)
+```
+##Logistic Model Predictions 
+```{r}
+AirlineGLM_pred <- ifelse(predict(step_airline, newdata =airline_test,  type = "response") >= .5, 1, 0)
+
+CrossTable(airline_test$satisfaction, AirlineGLM_pred)
+
+confusionMatrix(as.factor(AirlineGLM_pred), as.factor(airline_test$satisfaction), positive = "1")
+```
+
+#ANN Model
+```{r cache=TRUE}
+airline_neural<-neuralnet(satisfaction ~., data = airline_train)
+``` 
+
+##ANN Model Predictions 
+```{r}
+neural_results<-compute(airline_neural, airline_test[1:ncol(airline_test)])
+
+ANN_predicted<-ifelse(neural_results$net.result>=0.5,1,0)
+
+cor(ANN_predicted, airline_test$satisfaction)
+
+CrossTable(airline_test$satisfaction, ANN_predicted)
+
+confusionMatrix(data = as.factor(ANN_predicted), reference = as.factor(airline_test_labels), positive = "1")
+```
+
+
+#KNN Model
+```{r cache=TRUE}
+
+airline_train_KNN <- airline_train
+airline_test_KNN <-airline_test
+
+airline_train_KNN$satisfaction<-NULL
+airline_test_KNN$satisfaction<-NULL
+
+sqrt(nrow(airline_train_KNN))
+
+str(airline_train_KNN)
+
+summary(airline_train_KNN)
+summary(airline_test_KNN)
+summary(airline_train_labels)
+
+airline_KNN <- knn(train = airline_train_KNN, test = airline_test_KNN,
+                      cl = airline_train_labels, k=325)
+
+
+
+CrossTable(x = airline_test_labels, y =airline_KNN, 
+           prop.chisq=FALSE)
+
+confusionMatrix(as.factor(airline_KNN), as.factor(airline_test_labels), positive = "1")
+
+```
+
+##KNN Model Predictions 
+```{r}
+
+```
+
+
+#Tree Model 
+```{r cache=TRUE}
+Airline_Tree<-C5.0(as.factor(satisfaction) ~., data = airline_train)
+
+summary(Airline_Tree)
+```
+
+##Tree Model Predictions 
+```{r}
+airline_tree_pred<-predict(Airline_Tree, airline_test)
+
+
+CrossTable(airline_test$satisfaction, airline_tree_pred)
+confusionMatrix(data = as.factor(airline_tree_pred), reference = as.factor(airline_test$satisfaction), positive = "1")
+```
+

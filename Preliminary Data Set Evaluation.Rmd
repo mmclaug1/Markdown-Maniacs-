@@ -1,6 +1,6 @@
 ---
 title: "Project 3 - Early"
-author: ""
+author: "Joel Revo, Kenny Andrysiak, Jacob Cohen, Alec Palo, Michael McLaughlan"
 date: "3/29/2021"
 output: 
   html_document: 
@@ -27,6 +27,17 @@ library(aod)
 library(neuralnet)
 library(C50)
 ```
+#Abstract and Guiding Question 
+
+Dataset 
+(Assumption) We are assuming that the dataset is taken from many different passengers from different airlines. However, we do not have data on each individual airline. So our audience will be the Airline industry as a whole. We will tailor our results to different airline categories (Luxury, standard, budget). 
+
+Guiding Question 
+
+1. We want to predict whether or not a given customer will be satisfied or not
+
+2. What parts of the customer experience contribute most to whether a customer is satisfied or not, and how would differnt airlines best implement their services to make a customer satisfied? 
+
 
 #Data Cleaning 
 ```{r}
@@ -47,6 +58,8 @@ Airlinedata <- na.omit(Airlinedata)
 
 summary(Airlinedata)
 str(Airlinedata)
+
+
 
 ```
 
@@ -96,6 +109,10 @@ CrossTable(airline_test$satisfaction, AirlineGLM_pred)
 
 confusionMatrix(as.factor(AirlineGLM_pred), as.factor(airline_test$satisfaction), positive = "1")
 ```
+## Logistic Model Interpretations 
+```{r}
+
+```
 
 #ANN Model
 ```{r cache=TRUE}
@@ -104,6 +121,7 @@ airline_neural<-neuralnet(satisfaction ~., data = airline_train)
 
 ##ANN Model Predictions 
 ```{r}
+#Won't run with the code using a node 
 neural_results<-compute(airline_neural, airline_test[1:ncol(airline_test)])
 
 ANN_predicted<-ifelse(neural_results$net.result>=0.5,1,0)
@@ -113,6 +131,10 @@ cor(ANN_predicted, airline_test$satisfaction)
 CrossTable(airline_test$satisfaction, ANN_predicted)
 
 confusionMatrix(data = as.factor(ANN_predicted), reference = as.factor(airline_test_labels), positive = "1")
+```
+## ANN Model Interpretation 
+```{r}
+
 ```
 
 
@@ -145,7 +167,7 @@ confusionMatrix(as.factor(airline_KNN), as.factor(airline_test_labels), positive
 
 ```
 
-##KNN Model Predictions 
+##KNN Model Interpreation 
 ```{r}
 
 ```
@@ -165,5 +187,9 @@ airline_tree_pred<-predict(Airline_Tree, airline_test)
 
 CrossTable(airline_test$satisfaction, airline_tree_pred)
 confusionMatrix(data = as.factor(airline_tree_pred), reference = as.factor(airline_test$satisfaction), positive = "1")
+```
+## Tree Model Interpretation 
+```{r}
+
 ```
 

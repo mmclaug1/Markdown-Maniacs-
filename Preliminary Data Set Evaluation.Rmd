@@ -98,7 +98,10 @@ airline_glm <- glm(satisfaction ~ ., data = airline_train, family= "binomial")
 summary(airline_glm)
 
 step_airline<-step(airline_glm)
+```
 
+#Step Model Summary
+```{r}
 summary(step_airline)
 ```
 ##Logistic Model Predictions 
@@ -107,8 +110,32 @@ AirlineGLM_pred <- ifelse(predict(step_airline, newdata =airline_test,  type = "
 
 CrossTable(airline_test$satisfaction, AirlineGLM_pred)
 
-confusionMatrix(as.factor(AirlineGLM_pred), as.factor(airline_test$satisfaction), positive = "1")
+#GETTING ERROR THAT there is an unused argument here. However, you aboslutely need positive =1, otherwise the results flip. Not sure what that error is. 
+
+#confusionMatrix(as.factor(AirlineGLM_pred), as.factor(airline_test$satisfaction), positive = "1")
 ```
+
+## Logistic Model (Optimal Threshold)
+```{r}
+library(InformationValue)
+
+#Creating Predictions (percentage)
+AirlineGLM_pred_optimal <- predict(step_airline, newdata =airline_test,  type = "response")
+
+#Finding optimal threshold
+optimalGLM<-optimalCutoff(airline_test$satisfaction, AirlineGLM_pred_optimal)[1]
+
+#if predictions> optimal, 1, otherwise 0
+Airline_binary_predictions<-ifelse(AirlineGLM_pred_optimal>optimalGLM,1,0)
+
+
+CrossTable(airline_test$satisfaction, Airline_binary_predictions)
+
+#GETTING ERROR THAT there is an unused argument here. However, you aboslutely need positive =1, otherwise the results flip. Not sure what that error is. 
+
+#confusionMatrix(as.factor(Airline_binary_predictions), as.factor(airline_test$satisfaction), positive = "1")
+```
+
 ## Logistic Model Interpretations 
 ```{r}
 
@@ -116,7 +143,7 @@ confusionMatrix(as.factor(AirlineGLM_pred), as.factor(airline_test$satisfaction)
 
 #ANN Model
 ```{r cache=TRUE}
-airline_neural<-neuralnet(satisfaction ~., data = airline_train)
+airline_neural<-neuralnet(satisfaction ~., data = airline_train, hidden = 1)
 ``` 
 
 ##ANN Model Predictions 
@@ -130,8 +157,29 @@ cor(ANN_predicted, airline_test$satisfaction)
 
 CrossTable(airline_test$satisfaction, ANN_predicted)
 
-confusionMatrix(data = as.factor(ANN_predicted), reference = as.factor(airline_test_labels), positive = "1")
+#SAME ERROR AS THE ABOVE ONE
+
+#onfusionMatrix(data = as.factor(ANN_predicted), reference = as.factor(airline_test_labels), positive = "1")
 ```
+
+##ANN Model Optimal 
+```{r}
+
+neural_results_2<-predict(airline_neural, newdata=airline_test, type="response")
+
+optimalANN<-optimalCutoff(airline_test$satisfaction, neural_results_2)[1]
+
+neural_airline_binarypred<-ifelse(neural_results_2>optimalANN,1,0)
+
+cor(neural_airline_binarypred, airline_test$satisfaction)
+
+CrossTable(airline_test$satisfaction, neural_airline_binarypred)
+
+#SAME ERROR AS THE ABOVE ONES
+
+#confusionMatrix(data = as.factor(neural_airline_binarypred), reference = as.factor(airline_test_labels), positive = "1")
+```
+
 ## ANN Model Interpretation 
 ```{r}
 
@@ -163,7 +211,9 @@ airline_KNN <- knn(train = airline_train_KNN, test = airline_test_KNN,
 CrossTable(x = airline_test_labels, y =airline_KNN, 
            prop.chisq=FALSE)
 
-confusionMatrix(as.factor(airline_KNN), as.factor(airline_test_labels), positive = "1")
+#SAME ERROR AS ABOVE
+
+#confusionMatrix(as.factor(airline_KNN), as.factor(airline_test_labels), positive = "1")
 
 ```
 
@@ -186,7 +236,10 @@ airline_tree_pred<-predict(Airline_Tree, airline_test)
 
 
 CrossTable(airline_test$satisfaction, airline_tree_pred)
-confusionMatrix(data = as.factor(airline_tree_pred), reference = as.factor(airline_test$satisfaction), positive = "1")
+
+#SAME ERROR
+
+#confusionMatrix(data = as.factor(airline_tree_pred), reference = as.factor(airline_test$satisfaction), positive = "1")
 ```
 ## Tree Model Interpretation 
 ```{r}

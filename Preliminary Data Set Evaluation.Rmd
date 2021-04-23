@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r include=FALSE}
+```{r include = FALSE}
 library(VGAM)
 library(class)
 library(caret)
@@ -29,14 +29,14 @@ library(C50)
 ```
 #Abstract and Guiding Question 
 
-Dataset 
+Data Set 
 (Assumption) We are assuming that the dataset is taken from many different passengers from different airlines. However, we do not have data on each individual airline. So our audience will be the Airline industry as a whole. We will tailor our results to different airline categories (Luxury, standard, budget). 
 
 Guiding Question 
 
 1. We want to predict whether or not a given customer will be satisfied or not
 
-2. What parts of the customer experience contribute most to whether a customer is satisfied or not, and how would differnt airlines best implement their services to make a customer satisfied? 
+2. What parts of the customer experience contribute most to whether a customer is satisfied or not, and how would different airlines best implement their services to make a customer satisfied? 
 
 
 #Data Cleaning 
@@ -44,14 +44,14 @@ Guiding Question
 
 Airlinedata<-read.csv("Invistico_Airline.csv")
 
-
+# Making Variables Factors that are Binary
 Airlinedata$Gender<-as.factor(Airlinedata$Gender)
 Airlinedata$Customer.Type<-as.factor(Airlinedata$Gender)
 Airlinedata$Type.of.Travel<-as.factor(Airlinedata$Type.of.Travel)
 Airlinedata$Class<-as.factor(Airlinedata$Class)
 
 
-
+# Converting Response Variable to a Binary Variable
 Airlinedata$satisfaction<-ifelse(Airlinedata$satisfaction=="satisfied", 1, 0)
 
 Airlinedata <- na.omit(Airlinedata)
@@ -65,22 +65,21 @@ str(Airlinedata)
 
 #Normalize The Data
 ```{r}
+# Creating Dummy Variables to make everything numeric
 Airlinemm <- as.data.frame(model.matrix(~.-1,Airlinedata))
 
-
-# Randomize the rows in the data (shuffling the rows)
+# Randomizing the data (shuffling the rows)
 set.seed(12345)
 airline_random <- Airlinemm[sample(nrow(Airlinemm)),]
 
-#Normalize the data
-normalize <- function(x) {
-  return ((x - min(x)) / (max(x) - min(x)))
-}
+#Normalize the data to keep everything on the same scale
+normalize <- function(x){return ((x - min(x)) / (max(x) - min(x)))}
 
-# we are going to normalize everything 
 airline_norm <- as.data.frame(lapply(airline_random, normalize))
 ```
-#Get Training and Testing Samples
+
+# Get Training and Testing Samples
+
 ```{r}
 airline_train <- airline_norm[1:105000,]
 airline_test <- airline_norm[105001:129487,]
@@ -90,32 +89,40 @@ airline_train_labels <- airline_norm[1:105000, "satisfaction"]
 airline_test_labels <- airline_norm[105001:129487, "satisfaction"]
 ```
 
-#Logistic Model 
-```{r cache=TRUE}
+# Logistic Model 
+
+```{r}
 
 airline_glm <- glm(satisfaction ~ ., data = airline_train, family= "binomial")
 
 summary(airline_glm)
+```
 
+
+```{r cach = TRUE, include = FALSE}
 step_airline<-step(airline_glm)
 ```
 
-#Step Model Summary
+# Step Model Summary
+
 ```{r}
 summary(step_airline)
 ```
-##Logistic Model Predictions 
+
+## Logistic Model Predictions 
+
 ```{r}
 AirlineGLM_pred <- ifelse(predict(step_airline, newdata =airline_test,  type = "response") >= .5, 1, 0)
 
 CrossTable(airline_test$satisfaction, AirlineGLM_pred)
 
-#GETTING ERROR THAT there is an unused argument here. However, you aboslutely need positive =1, otherwise the results flip. Not sure what that error is. 
+#GETTING ERROR THAT there is an unused argument here. However, you absolutely need positive =1, otherwise the results flip. Not sure what that error is. 
 
 #confusionMatrix(as.factor(AirlineGLM_pred), as.factor(airline_test$satisfaction), positive = "1")
 ```
 
 ## Logistic Model (Optimal Threshold)
+
 ```{r}
 library(InformationValue)
 
@@ -137,16 +144,19 @@ CrossTable(airline_test$satisfaction, Airline_binary_predictions)
 ```
 
 ## Logistic Model Interpretations 
+
 ```{r}
 
 ```
 
-#ANN Model
+# ANN Model
+
 ```{r cache=TRUE}
 airline_neural<-neuralnet(satisfaction ~., data = airline_train, hidden = 1)
 ``` 
 
-##ANN Model Predictions 
+## ANN Model Predictions 
+
 ```{r}
 #Won't run with the code using a node 
 neural_results<-compute(airline_neural, airline_test[1:ncol(airline_test)])
@@ -159,10 +169,11 @@ CrossTable(airline_test$satisfaction, ANN_predicted)
 
 #SAME ERROR AS THE ABOVE ONE
 
-#onfusionMatrix(data = as.factor(ANN_predicted), reference = as.factor(airline_test_labels), positive = "1")
+#confusionMatrix(data = as.factor(ANN_predicted), reference = as.factor(airline_test_labels), positive = "1")
 ```
 
-##ANN Model Optimal 
+## ANN Model Optimal
+
 ```{r}
 
 neural_results_2<-predict(airline_neural, newdata=airline_test, type="response")
@@ -181,12 +192,24 @@ CrossTable(airline_test$satisfaction, neural_airline_binarypred)
 ```
 
 ## ANN Model Interpretation 
+
 ```{r}
 
 ```
 
+# SVM Model
+
+```{r}
+
+```
+
+## KSVM Model Interpretation
+```{r}
+
+```
 
 #KNN Model
+
 ```{r cache=TRUE}
 
 airline_train_KNN <- airline_train
@@ -217,23 +240,37 @@ CrossTable(x = airline_test_labels, y =airline_KNN,
 
 ```
 
-##KNN Model Interpreation 
+## KNN Model Interpreation 
+
 ```{r}
 
 ```
 
+# Tree Model 
 
-#Tree Model 
 ```{r cache=TRUE}
 Airline_Tree<-C5.0(as.factor(satisfaction) ~., data = airline_train)
 
-summary(Airline_Tree)
+Airline_tree_pred<-predict(Airline_tree, airline_train)
+
+
+# Improving the Decision Tree Model
+airline_norm$satisfaction<-as.factor(airline_norm$satisfaction)
+
+tree_ctrl<-trainControl(method = "cv", number = 10, selectionFunction = "oneSE")
+tree_grid <- expand.grid(.model = "tree", .trials = c(1,3,5,7,9), .winnow = "FALSE")
+
+set.seed(300)
+Airline_tree2<-train(as.factor(satisfaction) ~ ., data = airline_train, method = "C5.0", metric = "Kappa", trControl = tree_ctrl, tuneGrid = tree_grid)
+Airline_tree_pred2<-predict(Airline_tree2, airline_test)
+
+confusionMatrix(as.factor(Airline_tree_pred), as.factor(airline_norm$satisfaction))
 ```
 
-##Tree Model Predictions 
+## Tree Model Predictions 
+
 ```{r}
 airline_tree_pred<-predict(Airline_Tree, airline_test)
-
 
 CrossTable(airline_test$satisfaction, airline_tree_pred)
 
@@ -241,8 +278,28 @@ CrossTable(airline_test$satisfaction, airline_tree_pred)
 
 #confusionMatrix(data = as.factor(airline_tree_pred), reference = as.factor(airline_test$satisfaction), positive = "1")
 ```
+
 ## Tree Model Interpretation 
+
 ```{r}
 
 ```
 
+# Combined Model
+```{r}
+combine_model_pred<-ifelse(as.integer(predicted_yyes)+(as.integer(knn_test_pred)-1)+as.integer(tele_logit_pred) + as.integer(airline_tree_pred)>=2,1,0)
+cor(combine_model_pred,tele_test$yyes)
+
+summary(airline_combined)
+row_break<-round(nrow(telco_combined)*0.3)
+
+telco_test<-telco_combined[1:row_break,]
+telco_train<-telco_combined[row_break:nrow(telco_combined),]
+
+telco_combined_tree<-C5.0(as.factor(telco_norm.ChurnYes) ~., data = telco_train)
+plot(telco_combined_tree)
+
+str(telco_combined)
+combined_pred<-predict(telco_combined_tree, telco_test)
+confusionMatrix(as.factor(combined_pred), as.factor(telco_test$telco_norm.ChurnYes))
+```

@@ -27,7 +27,7 @@ library(aod)
 library(neuralnet)
 library(C50)
 ```
-#Abstract and Guiding Question 
+# Abstract and Guiding Question 
 
 Data Set 
 (Assumption) We are assuming that the dataset is taken from many different passengers from different airlines. However, we do not have data on each individual airline. So our audience will be the Airline industry as a whole. We will tailor our results to different airline categories (Luxury, standard, budget). 
@@ -39,7 +39,7 @@ Guiding Question
 2. What parts of the customer experience contribute most to whether a customer is satisfied or not, and how would different airlines best implement their services to make a customer satisfied? 
 
 
-#Data Cleaning 
+# Data Cleaning 
 ```{r}
 
 Airlinedata<-read.csv("Invistico_Airline.csv")
@@ -56,14 +56,10 @@ Airlinedata$satisfaction<-ifelse(Airlinedata$satisfaction=="satisfied", 1, 0)
 
 Airlinedata <- na.omit(Airlinedata)
 
-summary(Airlinedata)
 str(Airlinedata)
-
-
-
 ```
 
-#Normalize The Data
+# Normalize The Data
 ```{r}
 # Creating Dummy Variables to make everything numeric
 Airlinemm <- as.data.frame(model.matrix(~.-1,Airlinedata))
@@ -78,7 +74,7 @@ normalize <- function(x){return ((x - min(x)) / (max(x) - min(x)))}
 airline_norm <- as.data.frame(lapply(airline_random, normalize))
 ```
 
-# Get Training and Testing Samples
+## Get Training and Testing Samples
 
 ```{r}
 airline_train <- airline_norm[1:105000,]
@@ -92,10 +88,7 @@ airline_test_labels <- airline_norm[105001:129487, "satisfaction"]
 # Logistic Model 
 
 ```{r}
-
 airline_glm <- glm(satisfaction ~ ., data = airline_train, family= "binomial")
-
-summary(airline_glm)
 ```
 
 
@@ -103,7 +96,7 @@ summary(airline_glm)
 step_airline<-step(airline_glm)
 ```
 
-# Step Model Summary
+## Step Model Summary
 
 ```{r}
 summary(step_airline)
@@ -112,35 +105,9 @@ summary(step_airline)
 ## Logistic Model Predictions 
 
 ```{r}
-AirlineGLM_pred <- ifelse(predict(step_airline, newdata =airline_test,  type = "response") >= .5, 1, 0)
+AirlineGLM_pred <- ifelse(predict(step_airline, newdata =airline_test,  type = "response") >= .33, 1, 0)
 
-CrossTable(airline_test$satisfaction, AirlineGLM_pred)
-
-#GETTING ERROR THAT there is an unused argument here. However, you absolutely need positive =1, otherwise the results flip. Not sure what that error is. 
-
-#confusionMatrix(as.factor(AirlineGLM_pred), as.factor(airline_test$satisfaction), positive = "1")
-```
-
-## Logistic Model (Optimal Threshold)
-
-```{r}
-library(InformationValue)
-
-#Creating Predictions (percentage)
-AirlineGLM_pred_optimal <- predict(step_airline, newdata =airline_test,  type = "response")
-
-#Finding optimal threshold
-optimalGLM<-optimalCutoff(airline_test$satisfaction, AirlineGLM_pred_optimal)[1]
-
-#if predictions> optimal, 1, otherwise 0
-Airline_binary_predictions<-ifelse(AirlineGLM_pred_optimal>optimalGLM,1,0)
-
-
-CrossTable(airline_test$satisfaction, Airline_binary_predictions)
-
-#GETTING ERROR THAT there is an unused argument here. However, you aboslutely need positive =1, otherwise the results flip. Not sure what that error is. 
-
-#confusionMatrix(as.factor(Airline_binary_predictions), as.factor(airline_test$satisfaction), positive = "1")
+confusionMatrix(as.factor(AirlineGLM_pred), as.factor(airline_test$satisfaction), positive = "1")
 ```
 
 ## Logistic Model Interpretations 
@@ -152,58 +119,23 @@ CrossTable(airline_test$satisfaction, Airline_binary_predictions)
 # ANN Model
 
 ```{r cache=TRUE}
-airline_neural<-neuralnet(satisfaction ~., data = airline_train, hidden = 1)
+airline_neural<-neuralnet(satisfaction ~., data = airline_train)
 ``` 
 
 ## ANN Model Predictions 
 
 ```{r}
-#Won't run with the code using a node 
 neural_results<-compute(airline_neural, airline_test[1:ncol(airline_test)])
 
-ANN_predicted<-ifelse(neural_results$net.result>=0.5,1,0)
+ANN_predicted<-ifelse(neural_results$net.result>=0.33,1,0)
 
 cor(ANN_predicted, airline_test$satisfaction)
 
-CrossTable(airline_test$satisfaction, ANN_predicted)
-
-#SAME ERROR AS THE ABOVE ONE
-
-#confusionMatrix(data = as.factor(ANN_predicted), reference = as.factor(airline_test_labels), positive = "1")
-```
-
-## ANN Model Optimal
-
-```{r}
-
-neural_results_2<-predict(airline_neural, newdata=airline_test, type="response")
-
-optimalANN<-optimalCutoff(airline_test$satisfaction, neural_results_2)[1]
-
-neural_airline_binarypred<-ifelse(neural_results_2>optimalANN,1,0)
-
-cor(neural_airline_binarypred, airline_test$satisfaction)
-
-CrossTable(airline_test$satisfaction, neural_airline_binarypred)
-
-#SAME ERROR AS THE ABOVE ONES
-
-#confusionMatrix(data = as.factor(neural_airline_binarypred), reference = as.factor(airline_test_labels), positive = "1")
+confusionMatrix(data = as.factor(ANN_predicted), reference = as.factor(airline_test_labels), positive = "1")
 ```
 
 ## ANN Model Interpretation 
 
-```{r}
-
-```
-
-# SVM Model
-
-```{r}
-
-```
-
-## KSVM Model Interpretation
 ```{r}
 
 ```
@@ -220,27 +152,13 @@ airline_test_KNN$satisfaction<-NULL
 
 sqrt(nrow(airline_train_KNN))
 
-str(airline_train_KNN)
+airline_KNN <- knn(train = airline_train_KNN, test = airline_test_KNN, cl = airline_train_labels, k=325)
 
-summary(airline_train_KNN)
-summary(airline_test_KNN)
-summary(airline_train_labels)
-
-airline_KNN <- knn(train = airline_train_KNN, test = airline_test_KNN,
-                      cl = airline_train_labels, k=325)
-
-
-
-CrossTable(x = airline_test_labels, y =airline_KNN, 
-           prop.chisq=FALSE)
-
-#SAME ERROR AS ABOVE
-
-#confusionMatrix(as.factor(airline_KNN), as.factor(airline_test_labels), positive = "1")
+confusionMatrix(as.factor(airline_KNN), as.factor(airline_test_labels), positive = "1")
 
 ```
 
-## KNN Model Interpreation 
+## KNN Model Interpretaion 
 
 ```{r}
 
@@ -251,20 +169,7 @@ CrossTable(x = airline_test_labels, y =airline_KNN,
 ```{r cache=TRUE}
 Airline_Tree<-C5.0(as.factor(satisfaction) ~., data = airline_train)
 
-Airline_tree_pred<-predict(Airline_tree, airline_train)
-
-
-# Improving the Decision Tree Model
-airline_norm$satisfaction<-as.factor(airline_norm$satisfaction)
-
-tree_ctrl<-trainControl(method = "cv", number = 10, selectionFunction = "oneSE")
-tree_grid <- expand.grid(.model = "tree", .trials = c(1,3,5,7,9), .winnow = "FALSE")
-
-set.seed(300)
-Airline_tree2<-train(as.factor(satisfaction) ~ ., data = airline_train, method = "C5.0", metric = "Kappa", trControl = tree_ctrl, tuneGrid = tree_grid)
-Airline_tree_pred2<-predict(Airline_tree2, airline_test)
-
-confusionMatrix(as.factor(Airline_tree_pred), as.factor(airline_norm$satisfaction))
+Airline_tree_pred<-predict(Airline_Tree, airline_train)
 ```
 
 ## Tree Model Predictions 
@@ -272,11 +177,7 @@ confusionMatrix(as.factor(Airline_tree_pred), as.factor(airline_norm$satisfactio
 ```{r}
 airline_tree_pred<-predict(Airline_Tree, airline_test)
 
-CrossTable(airline_test$satisfaction, airline_tree_pred)
-
-#SAME ERROR
-
-#confusionMatrix(data = as.factor(airline_tree_pred), reference = as.factor(airline_test$satisfaction), positive = "1")
+confusionMatrix(data = as.factor(airline_tree_pred), reference = as.factor(airline_test_labels), positive = "1")
 ```
 
 ## Tree Model Interpretation 
@@ -287,19 +188,11 @@ CrossTable(airline_test$satisfaction, airline_tree_pred)
 
 # Combined Model
 ```{r}
-combine_model_pred<-ifelse(as.integer(predicted_yyes)+(as.integer(knn_test_pred)-1)+as.integer(tele_logit_pred) + as.integer(airline_tree_pred)>=2,1,0)
-cor(combine_model_pred,tele_test$yyes)
+combine_model_pred<-ifelse(as.integer(AirlineGLM_pred)+(as.integer(airline_KNN)-1)+as.integer(ANN_predicted) + (as.integer(airline_tree_pred)-1)>=2,1,0)
 
-summary(airline_combined)
-row_break<-round(nrow(telco_combined)*0.3)
+cor(combine_model_pred,airline_test$satisfaction)
 
-telco_test<-telco_combined[1:row_break,]
-telco_train<-telco_combined[row_break:nrow(telco_combined),]
-
-telco_combined_tree<-C5.0(as.factor(telco_norm.ChurnYes) ~., data = telco_train)
-plot(telco_combined_tree)
-
-str(telco_combined)
-combined_pred<-predict(telco_combined_tree, telco_test)
-confusionMatrix(as.factor(combined_pred), as.factor(telco_test$telco_norm.ChurnYes))
+confusionMatrix(as.factor(combine_model_pred), as.factor(airline_test$satisfaction))
 ```
+
+## Conclusions

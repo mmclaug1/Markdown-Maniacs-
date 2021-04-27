@@ -1,5 +1,5 @@
 ---
-title: "Project 3 - Early"
+title: "Project 3"
 author: "Joel Revo, Kenny Andrysiak, Jacob Cohen, Alec Palo, Michael McLaughlan"
 date: "3/29/2021"
 output: 
@@ -87,6 +87,12 @@ airline_test_labels <- airline_norm[105001:129487, "satisfaction"]
 
 # Logistic Model 
 
+Our logistic model will model our binary outcome variable, satisfaction, according to the predictor variables in the dataset. We can use this model to answer our 2 guiding questions by: <br/>
+
+1. Predicting the outcome of the decision variable using the logistic regression. <br/>
+
+2. Analyzing the significance of the predictor variables in determining the response variable.
+
 ```{r}
 airline_glm <- glm(satisfaction ~ ., data = airline_train, family= "binomial")
 ```
@@ -112,11 +118,18 @@ confusionMatrix(as.factor(AirlineGLM_pred), as.factor(airline_test$satisfaction)
 
 ## Logistic Model Interpretations 
 
-```{r}
+In terms of overall accuracy, the logistic model performed decently well, with an accuracy of approximately 0.83 (83%). However, general accuracy is not the only consideration when it comes to the satisfaction of airline passengers. There are two errors that the model makes: predicting a passenger will not be satisfied when they actually are satisfied (false positive), and predicting a passenger will be satisfied when they actually are not satisfied (false negative), the latter being more costly. The *specificity* of the model, 0.80, indicates that for only 80% of instances in which passengers are not satisfied, the model correctly predicts they will not be satisfied. In other words, the logistic model is more likely to commit a false negative error than a false positive error, which is harmful to airlines in both the short and long term. <br/>
 
-```
+Kappa: 57.1% <br/> 
+Accuracy: 79.16% <br/>
+Sensitivity: 90.61% <br/>
+Specificity: 65.35%
 
 # ANN Model
+
+The Artificial Neural Network (ANN) model provides evaluates the relationship between the output signal (satisfaction) and the input signal (predictor variables). The signals are then weighted according to performance, and passed on according to an activation function. <br/>
+
+Our ANN model will help answer the two guiding questions of our analysis by predicting the outcome of the response variable. The accuracy and kappa of the model will then be evaluated to determine the significance of the predictor variables.
 
 ```{r cache=TRUE}
 airline_neural<-neuralnet(satisfaction ~., data = airline_train)
@@ -136,11 +149,23 @@ confusionMatrix(data = as.factor(ANN_predicted), reference = as.factor(airline_t
 
 ## ANN Model Interpretation 
 
-```{r}
+Our Neural Networks model returned with an accuracy of 81.92%, which is an improvement on the accuracy provided by the logistic regression. The following models return a better accuracy rating: Knn, Decision Tree and the Combined Model. With a Kappa value of 63.26%, the Ann model's predictions for both positive and negative outcomes are correct due to randomness and chance for a significant amount of the data points. Despite the model's relatively low Kappa value, the model performed well and has managerial implications.  <br/>
 
-```
+The sensitivity value of 87.74% and specificity value of 89.16% suggests that the model accurately predicts true positives and true negatives with similar levels of accuracy. This gives the model managerial potential, as it can be used as a basis to make decisions for the airline to keep customers satisfied. Other models produce results that strongly favor true positives or true negatives, meaning they can only be reliably used to predict on half of the data. This model does not have that concern, and can be used by managers to predict the satisfaction of all of their customers.  <br/>
+
+This model was useful in answering the first of our two guiding questions.  <br/>
+
+Model Performance: <br/>
+Kappa: 63.26% <br/>
+Accuracy: 81.92% <br/>
+Sensitivity: 87.74% <br/>
+Specificity: 89.16%
 
 #KNN Model
+
+The KNN model is a machine learning algorithm our team used to predict the outcome of the response variable. The model plots the Airline data in a multi-dimensional space and determines the response variable according to its relationship with its nearest neighbors. Its nearest neighbors are determined according to their Euclidean distance from the record. <br/>
+
+Our KNN model will be useful in answering our 2 guiding questions by predicting the outcome of the response variable. Additionally, the overall quality of the data can be analyzed by the outcome of the KNN model, as it tests the outcome of the response variable according to the dataset nearest neighbors. We chose to use k=325, which is proportionate to the size of our dataset.
 
 ```{r cache=TRUE}
 
@@ -160,11 +185,18 @@ confusionMatrix(as.factor(airline_KNN), as.factor(airline_test_labels), positive
 
 ## KNN Model Interpretaion 
 
-```{r}
+The kNN model as a whole was quite accurate, recording an overall accuracy of 0.88 (88%), which is more accurate than each of the other individual models. However, once again, it is important to consider the *specificity* of the model, which records how likely the model is to predict a passenger will not be satisfied when they actually are not satisfied. The specificity of the model is 0.86, compared to the sensitivity value of 0.88, suggesting the model is more likely to commit a false negative error than a false positive one. <br/>
 
-```
+Accuracy: 88.38% <br/>
+Kappa: 76.64% <br/>
+Sensitivity: 87.74% <br/>
+Specificity: 89.16%
 
 # Tree Model 
+
+The Decision Tree model uses recursive partitioning by dividing the dataset into small bits of distinct values and creating a flowchart of branches. The model therefore can partition the data that is most predictive of the target class, and make logical decisions according to the data. <br/>
+
+Our Decision Tree model will allow us to answer our two guiding questions by breaking our data into a visual flow chart. This will provide a useful prediction of the response varibale, which can be evaluated for accuracy.
 
 ```{r cache=TRUE}
 Airline_Tree<-C5.0(as.factor(satisfaction) ~., data = airline_train)
@@ -182,9 +214,16 @@ confusionMatrix(data = as.factor(airline_tree_pred), reference = as.factor(airli
 
 ## Tree Model Interpretation 
 
-```{r}
+Our Decision Tree  model returned with an accuracy of 94.16%, and is the best model in this report with regards to its performance with our data set. With a Kappa value of 88.25%, the Decision Tree model's predictions for both positive and negative outcomes are correct due to the ability of the model to partition the data into predictive data points. The models relatively high Kappa value implies that its is making quality predictions that are correct due to the data and not by chance, and therefore this model has significant managerial implications. <br/>
 
-```
+The sensitivity value of 93.12% and specificity value of 95.40% suggests that the model accurately predicts true positives and true negatives with similar levels of accuracy. This gives the model managerial potential, as it can be used as a basis to make decisions for the airline to keep customers satisfied. Other models produce results that strongly favor true positives or true negatives, meaning they can only be reliably used to predict on half of the data. This model does not have that concern, and can be used by managers to predict the satisfaction of all of their customers. <br/>
+
+This model was useful in answering the first of our two guiding questions. With its high accuracy, Kappa,, sensitivity and specificity values the model can be used as a tool by management to reliably predict the customers who are satisfied and those that are not. <br/>
+
+Kappa: 88.25% <br/>
+Accuracy: 94.16% <br/>
+Sensitivity: 93.12% <br/>
+Specificity: 95.40%
 
 # Combined Model
 ```{r}
@@ -195,4 +234,41 @@ cor(combine_model_pred,airline_test$satisfaction)
 confusionMatrix(as.factor(combine_model_pred), as.factor(airline_test$satisfaction))
 ```
 
-## Conclusions
+## Combined Model Interpretation 
+
+The combined model returned an accuracy of 85.12%, which is the third best model performance we have tested in this report. While the model has a relatively high accuracy level, its Kappa value is relatively low at a value of .69, suggesting the model came to the correct prediction by chance for a significant number of predictions. <br/>
+
+With a sensitivity value of 74.92% and a specificity value of 93.58%, the model is more likely to predict false positives than false negatives. This could pose risks for managers if they decide to use the combined model in their decision making, as identifying false positives would be counter productive to manager's efforts to increase customer airline satisfaction. <br/>
+
+Kappa: 69.53% <br/>
+Accuracy: 85.12% <br/>
+Sensitivity: 74.92% <br/>
+Specificity: 93.58%
+
+# Conclusions
+
+Our models were useful in determining the answer to our two guiding questions, which are as follows: <br/>
+
+1. Can we predict whether or not a given customer will be satisfied? <br/>
+
+2. What parts of the customer experience contribute most to whether a customer is satisfied or not, and how would different airlines best implement their services to make a customer satisfied?
+
+## Predicting Satisfaction Outcome 
+
+Our models predict the test data, which is made up of 24,487 customer experiences and its corresponding data points. Of those 24,487 customer experiences, 11,106 were not satisfied. This suggests that the airline could significantly benefit by identifying customers who likely not to be satisfied, as they make up a significant proportion of their clientele.  <br/>
+
+For our first question we have determined that we can accurately predict whether a customer will be satisfied or not using our models to predict the binary response variable. We would recommend that managers use the decision tree model, which returned a 94% overall accuracy rate, to make decisions relating to the airline business. Since the model has similar and quite high sensitivity and specificity values as well, the model can accurately predict both who is likely to be satisfied and who will not be. Additionally, the tree model is not more likely to commit a false positive error than a false negative error, and vice versa.
+
+## Determining Parts of Customer Experience Contributing to Satisfaction
+
+Our logistic regression best allows for an analysis of the impact that different variables have on the passenger experience. This information allows us to draw conclusions on how the customer satisfaction relates to different input variables. We have chosen to highlight several variables below that we believe have an outsize impact on the customer experience. <br/>
+
+The following variables had a negative impact on the customer experience: <br/>
+
+1. **Food and Drink**  <br/>
+
+Surprisingly, food and drink offerings had a poor impact on the customer's satisfaction. We hypothesize that this may be due to the fact that airline food is usually of poor quality, and can leave a customer disappointed by the food. Therefore we recommend that airlines do not serve food, but if they do, it should be of high quality. <br/>
+
+2. **Arrival Delay in Minutes**  <br/>
+
+Having an arrival delay is obviously going to disappoint customers; however, the magnitude of the impact it has on a customer's satisfaction is very significant. Also, interestingly enough, our models indicate that a departure delay actually has a positive impact on customer experience. This may be because the frustrations of the customer are realized when they have a arrival delay, compounding the negative impact of the delay. Customers also may miss connecting flights or commitments made before their flight. Therefore, we suggest that airlines prevent arrival delays at all cost or compensate customers who experience arrival delays. 

@@ -145,9 +145,7 @@ CrossTable(airline_test$satisfaction, Airline_binary_predictions)
 
 ## Logistic Model Interpretations 
 
-```{r}
-
-```
+In terms of overall accuracy, the logistic model performed decently well, with an accuracy of approximately 0.83 (83%). However, general accuracy is not the only consideration when it comes to the satisfaction of airline passengers. There are two errors that the model makes: predicting a passenger will not be satisfied when they actually are satisfied (false positive), and predicting a passenger will be satisfied when they actually are not satisfied (false negative), the latter being more costly. The *specificity* of the model, 0.80, indicates that for only 80% of instances in which passengers are not satisfied, the model correctly predicts they will not be satisfied. In other words, the logistic model is more likely to commit a false negative error than a false positive error, which is harmful to airlines in both the short and long term.
 
 # ANN Model
 
@@ -242,16 +240,14 @@ CrossTable(x = airline_test_labels, y =airline_KNN,
 
 ## KNN Model Interpreation 
 
-```{r}
-
-```
+The kNN model as a whole was quite accurate, recording an overall accuracy of 0.88 (88%), which is more accurate than each of the other individual models. However, once again, it is important to consider the *specificity* of the model, which records how likely the model is to predict a passenger will not be satisfied when they actually are not satisfied. The specificity of the model is 0.86, compared to the sensitivity value of 0.88, suggesting the model is more likely to commit a false negative error than a false positive one.
 
 # Tree Model 
 
 ```{r cache=TRUE}
 Airline_Tree<-C5.0(as.factor(satisfaction) ~., data = airline_train)
 
-Airline_tree_pred<-predict(Airline_tree, airline_train)
+Airline_tree_pred<-predict(Airline_T8ree, airline_train)
 
 
 # Improving the Decision Tree Model
